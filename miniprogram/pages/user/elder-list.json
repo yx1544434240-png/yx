@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "老人档案管理",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "state-view": "/components/state-view/index"
+  }
+}

@@ -1,0 +1,59 @@
+.container { padding-bottom: calc(195rpx + env(safe-area-inset-bottom)); }
+.main-info-card { padding: 38rpx 32rpx; background: var(--primary-soft); border-color: #d4e4d9; }
+.service-title { font-size: var(--font-title); font-weight: 600; line-height: 1.4; }
+.service-price { margin: 22rpx 0; font-size: var(--font-display); font-weight: 600; color: var(--primary-dark); }
+.unit { font-size: var(--font-caption); font-weight: 400; color: var(--text-secondary); }
+.tags-row { flex-wrap: wrap; gap: 12rpx; }
+.tags-row .tag { margin-left: 0 !important; }
+.detail-section .section-title { margin: 0 0 24rpx; }
+.content-text { font-size: var(--font-body); line-height: 1.85; white-space: pre-wrap; }
+.tips-item { color: var(--text-regular); font-size: var(--font-caption); line-height: 1.85; margin-bottom: 20rpx; }
+.tips-item:last-child { margin-bottom: 0; }
+.bottom-bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 24rpx 32rpx calc(24rpx + env(safe-area-inset-bottom)); background: #fff; border-top: 1rpx solid var(--border-color); z-index: 5; }
+.price-label { font-size: var(--font-caption); color: var(--text-secondary); }
+.total-price { color: var(--primary-dark); font-size: var(--font-section); font-weight: 600; }
+.btn-submit { margin: 0; flex: 1; max-width: 390rpx; }
+.elder-mode .bottom-bar { flex-wrap: wrap; }
+.elder-mode .btn-submit { max-width: none; }
+.main-info-card .skeleton-price { height: 77rpx; margin: 22rpx 0; }
+.main-info-card .skeleton-tag { height: 48rpx; width: 220rpx; margin-top: 0; }
+.detail-section .skeleton-section { margin-bottom: 24rpx; }
+.detail-section .skeleton-body { height: 59rpx; margin-top: 0; }
+.detail-section .skeleton-body + .skeleton-body { margin-top: 12rpx; }
+.skeleton-tip { height: 50rpx; width: 100%; }
+.elder-mode .skeleton-title { height: 69rpx; }
+.elder-mode .main-info-card .skeleton-price { height: 96rpx; }
+.elder-mode .main-info-card .skeleton-tag { height: 59rpx; }
+.elder-mode .detail-section .skeleton-section { height: 65rpx; }
+.elder-mode .detail-section .skeleton-body { height: 72rpx; }
+.elder-mode .skeleton-tip { height: 61rpx; }
+
+.detail-cover {
+  width: 100%;
+  height: 340rpx;
+  margin-bottom: 24rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: #eaf0e3;
+  display: block;
+}
+
+.detail-cover service-photo,
+.detail-cover .service-photo,
+.detail-cover image {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.elder-mode .detail-cover {
+  height: 380rpx;
+}
+
+/* 大字模式底栏折行约 240rpx，预留更多空间避免遮挡最后一张卡片 */
+.container.elder-mode { padding-bottom: calc(300rpx + env(safe-area-inset-bottom)); }
+@media (min-width: 600px) {
+  .container.container { padding-bottom: calc(160px + env(safe-area-inset-bottom)); }
+  .container .bottom-bar { max-width: 720px; margin: 0 auto; padding: 16px 24px calc(16px + env(safe-area-inset-bottom)); gap: 20px; }
+  .container .detail-cover { height: 260px; }
+}

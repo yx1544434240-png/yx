@@ -1,0 +1,5 @@
+# 仅本地演示需要导入角色与业务样例；正式部署使用基础 compose.yml。
+services:
+  db:
+    volumes:
+      - ./sql/data.sql:/docker-entrypoint-initdb.d/02-demo-data.sql:ro

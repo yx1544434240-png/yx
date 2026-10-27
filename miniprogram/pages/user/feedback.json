@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "服务建议与反馈",
+  "usingComponents": {
+    "state-view": "/components/state-view/index"
+  }
+}

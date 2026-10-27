@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "确认预约订单",
+  "usingComponents": {
+    "state-view": "/components/state-view/index"
+  }
+}

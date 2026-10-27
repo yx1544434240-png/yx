@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:1/test_database_not_configured
+    username: test_only
+    password: unused
+app:
+  media:
+    migrate-legacy: false
+  dev-mode: false
+  scheduling:
+    enabled: false
+  lan-sync:
+    enabled: false
+wechat:
+  miniapp:
+    appid: test-appid
+    secret: ''
+tencent:
+  cos:
+    secret-id: ''
+    secret-key: ''
+jwt:
+  secret: isolated-test-key-minimum-32-characters-long

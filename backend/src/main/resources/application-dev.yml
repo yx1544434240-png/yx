@@ -1,0 +1,28 @@
+spring:
+  config:
+    import:
+      - optional:file:./config/wechat-local.properties
+      - optional:file:./backend/config/wechat-local.properties
+      - optional:file:./config/cos-local.properties
+      - optional:file:./backend/config/cos-local.properties
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/aged_care_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+app:
+  dev-mode: ${APP_DEV_MODE:false}
+  lan-sync:
+    enabled: true
+
+wechat:
+  miniapp:
+    appid: ${WECHAT_APPID:wxb460b87f30a9791b}
+    secret: ${WECHAT_SECRET:}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

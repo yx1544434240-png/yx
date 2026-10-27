@@ -1,0 +1,158 @@
+<view class="container workbench-page {{isElderMode ? 'elder-mode' : ''}}">
+  <state-view wx:if="{{loadError}}" type="error" title="工作台暂时未能完整加载" description="请检查网络后重试" bindaction="loadStaffData" />
+
+  <!-- 定位权限降级引导条 -->
+  <view class="card location-auth-banner flex-between" wx:if="{{locationAuthDenied}}" bindtap="openLocationSetting">
+    <view class="location-auth-text">未开启位置权限，上门轨迹无法同步，点击前往开启</view>
+    <text class="location-auth-link">去设置 ›</text>
+  </view>
+
+  <!-- 待接单新任务强提醒 (倒计时置顶优先暴露) -->
+  <view class="section-title flex-between alert-heading" wx:if="{{pendingAttempt}}">
+    <text class="alert-title">有一项新服务待接单</text>
+    <dispatch-countdown deadline="{{pendingAttempt.attempt.deadline}}" bindexpire="onDispatchExpired" />
+  </view>
+  <view class="card pending-card" wx:if="{{pendingAttempt}}">
+    <view class="pending-header flex-between">
+      <text class="pending-service-name">{{pendingAttempt.order.serviceNameSnapshot}}</text>
+      <text class="tag tag-warning">待确认接单</text>
+    </view>
+    <view class="pending-line">服务对象：{{pendingAttempt.elder ? pendingAttempt.elder.name : '老人'}}<text wx:if="{{pendingAttempt.elder && pendingAttempt.elder.age != null}}"> ({{pendingAttempt.elder.age}}岁)</text></view>
+    <view class="pending-line">预约时间：{{pendingAttempt.order.plannedStartText}}</view>
+    <view class="pending-line">服务地点：{{pendingAttempt.order.addressSnapshot}}</view>
+    <view class="pending-line">服务单价：¥{{pendingAttempt.order.priceSnapshot}} ({{pendingAttempt.order.durationMinutesSnapshot}}分钟)</view>
+
+    <!-- 70/30 不对称操作布局：主接单 70%，次拒单 30% -->
+    <view class="pending-actions flex-row">
+      <button class="btn-tertiary btn-reject-action" disabled="{{actionLoading}}" bindtap="openRejectSheet" data-id="{{pendingAttempt.attempt.id}}">拒绝</button>
+      <button class="btn-primary btn-accept-action" loading="{{actionId === pendingAttempt.attempt.id ? actionLoading : false}}" disabled="{{actionLoading}}" bindtap="acceptDispatch" data-id="{{pendingAttempt.attempt.id}}">立即接单</button>
+    </view>
+  </view>
+
+  <!-- 服务人员档案顶栏 (紧凑横排布局 + 分段状态切换) -->
+  <view class="staff-header-card card" wx:if="{{staffProfile}}">
+    <view class="staff-header-top flex-between">
+      <view class="flex-row items-center" style="gap: 16rpx;">
+        <view class="staff-avatar"><image src="/assets/icons/staff.png" /></view>
+        <view>
+          <view class="staff-name">{{staffProfile.user.realName}} <text class="tag tag-success">认证上岗</text></view>
+          <view class="staff-meta">服务评分：{{staffProfile.profile.priorRating != null ? staffProfile.profile.priorRating + '分' : '—'}} · 已完成：{{staffProfile.profile.totalOrders != null ? staffProfile.profile.totalOrders : '0'}}单</view>
+        </view>
+      </view>
+      <!-- 分段状态控制器 -->
+      <view class="status-segmented flex-row">
+        <view class="seg-btn {{staffProfile.profile.currentStatus === 'AVAILABLE' ? 'seg-active-online' : ''}}" bindtap="changeStatusTo" data-status="AVAILABLE">在岗接单</view>
+        <view class="seg-btn {{staffProfile.profile.currentStatus === 'RESTING' ? 'seg-active-offline' : ''}}" bindtap="changeStatusTo" data-status="RESTING">休息中</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日任务列表 -->
+  <view class="section-title">我的服务安排</view>
+
+  <!-- 平滑滑动任务状态栏 -->
+  <view class="workbench-tabs-bar">
+    <view
+      wx:for="{{taskTabs}}"
+      wx:key="key"
+      class="workbench-tab-item {{currentTaskTabIndex === index ? 'active' : ''}}"
+      bindtap="changeTaskTab"
+      data-index="{{index}}"
+    >
+      {{item.label}}
+    </view>
+    <!-- 平滑滑动下划指示条 -->
+    <view
+      class="workbench-tab-slider"
+      style="transform: translateX({{currentTaskTabIndex * 100}}%);"
+    ></view>
+  </view>
+
+  <!-- 任务列表 (平滑淡入滑入效果) -->
+  <view class="task-list">
+    <!-- 骨架屏加载态 -->
+    <view class="workbench-skeleton-list" wx:if="{{tasksLoading && (!filteredTasks || filteredTasks.length === 0)}}">
+      <view class="card task-card skeleton-card" wx:for="{{[1, 2]}}" wx:key="*this">
+        <view class="flex-between">
+          <view class="skeleton-block skeleton-title" style="width: 48%;"></view>
+          <view class="skeleton-block skeleton-tag" style="width: 22%; margin: 0;"></view>
+        </view>
+        <view class="skeleton-block skeleton-body" style="width: 75%; margin-top: 18rpx;"></view>
+        <view class="skeleton-block skeleton-body" style="width: 60%; margin-top: 12rpx;"></view>
+        <view class="flex-between" style="margin-top: 24rpx; gap: 16rpx;">
+          <view class="skeleton-block" style="flex: 1; height: 88rpx; border-radius: 20rpx;"></view>
+          <view class="skeleton-block" style="flex: 1; height: 88rpx; border-radius: 20rpx;"></view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card task-card" wx:for="{{filteredTasks}}" wx:key="viewId">
+      <view class="flex-between">
+        <text class="task-name">{{item.order.serviceNameSnapshot}}</text>
+        <text class="tag {{statusTagMap[item.order.status] || 'tag-info'}}">{{statusTextMap[item.order.status] || item.order.status}}</text>
+      </view>
+      <view class="task-line">老人姓名：{{item.elder ? item.elder.name : '老人'}}</view>
+      <view class="task-line">上门地址：{{item.order.addressSnapshot}}</view>
+      <view class="task-line">预约时段：{{item.order.plannedRangeText}}</view>
+
+      <!-- 配送与导航动作条 (待上门状态下展示) -->
+      <view class="task-lbs-bar flex-row" wx:if="{{item.order.status === 'WAIT_VISIT'}}">
+        <button class="btn-nav flex-row items-center" bindtap="openNavigation" data-id="{{item.order.id}}">
+          <image class="ui-icon-small" src="/assets/icons/location.png" style="margin-right: 8rpx;" />
+          <text>路线导航与轨迹</text>
+        </button>
+        <button wx:if="{{isDevMode}}" class="btn-mock" bindtap="mockMoveStep" data-id="{{item.order.id}}">模拟移动</button>
+      </view>
+
+      <!-- 操作按钮流 (6字精简不折行，保持适老 88rpx 触控高度与对齐) -->
+      <view class="task-actions flex-between">
+        <button class="btn-call" bindtap="dialPhone" data-phone="{{item.order.contactPhoneSnapshot}}">联系服务对象</button>
+
+        <button class="btn-primary" wx:if="{{item.order.status === 'WAIT_VISIT'}}" loading="{{actionId === item.order.id ? actionLoading : false}}" disabled="{{actionLoading}}" bindtap="openStartService" data-id="{{item.order.id}}">
+          开始上门服务
+        </button>
+
+        <button class="btn-primary" wx:if="{{item.order.status === 'IN_SERVICE'}}" bindtap="openSubmitRecordModal" data-id="{{item.order.id}}">
+          提交服务记录
+        </button>
+
+        <view class="task-status-pill status-pill-waiting" wx:if="{{item.order.status === 'WAIT_CONFIRM'}}">待老人确认完成</view>
+        <view class="task-status-pill status-pill-completed" wx:if="{{item.order.status === 'COMPLETED'}}">✓ 服务已完成</view>
+      </view>
+    </view>
+    <state-view wx:if="{{filteredTasks.length === 0 && !tasksLoading && !tasksHasMore && !loadError}}" title="暂无此类服务安排" description="可通过上方切换接单状态" />
+    <button wx:if="{{tasksHasMore}}" class="retry-button" loading="{{tasksLoading}}" disabled="{{tasksLoading}}" bindtap="loadMoreTasks">加载更多服务安排</button>
+  </view>
+
+  <!-- 二次确认弹层：确认开始服务 -->
+  <bottom-sheet show="{{showStartSheet}}" title="确认开始服务" content="{{startServiceAddress}}" confirm-text="确认到达并开始" dismiss-text="再等等" loading="{{actionLoading}}" bind:close="closeStartSheet" bind:confirm="confirmStartService"></bottom-sheet>
+
+  <!-- 二次确认弹层：确认拒绝接单 -->
+  <bottom-sheet show="{{showRejectSheet}}" title="确认拒绝接单" content="确认无法接单吗？系统将自动释放并重派给其他服务人员。" confirm-text="确认拒绝" tone="danger" dismiss-text="再想想" loading="{{actionLoading}}" bind:close="closeRejectSheet" bind:confirm="confirmRejectDispatch"></bottom-sheet>
+
+  <!-- 提交履约记录抽屉 -->
+  <bottom-sheet show="{{showRecordModal}}" title="提交上门服务记录" confirm-text="确认提交" dismiss-text="取消" mask-closable="{{false}}" loading="{{actionLoading}}" bind:close="closeRecordModal" bind:confirm="submitRecord">
+    <view class="record-sheet-body">
+      <view class="modal-tip">请真实填写现场服务情况并拍摄或上传完成图片，以便老人与社区审核留档</view>
+      <textarea id="record-textarea" data-no-drag="true" class="record-textarea" placeholder="填写服务工作总结，如老人饮食情况、日常保洁清洁部位、陪同就医事项等..." value="{{recordSummary}}" bindinput="onInputSummary" cursor-spacing="140" />
+
+      <!-- 现场服务完成照片拍摄与上传凭证 -->
+      <view class="record-photos-section">
+        <view class="record-photos-title flex-between">
+          <text class="photos-title-text">现场完成照片凭证 ({{recordPhotos.length}}/4)</text>
+          <text class="photos-tip-text">支持拍照或相册选取</text>
+        </view>
+        <view class="record-photos-grid">
+          <view class="photo-thumb-item" wx:for="{{recordPhotos}}" wx:key="*this">
+              <image class="photo-img" src="{{recordPhotoSources[index]}}" mode="aspectFill" bindtap="previewRecordPhoto" data-url="{{item}}" />
+            <view class="photo-delete-btn" catchtap="deleteRecordPhoto" data-index="{{index}}" aria-label="删除此照片">✕</view>
+          </view>
+          <view class="photo-add-btn flex-column items-center justify-center" wx:if="{{recordPhotos.length < 4}}" bindtap="chooseRecordPhoto" hover-class="spring-in" hover-stay-time="80" aria-label="拍照或上传完成图片">
+            <image class="photo-camera-icon" src="/assets/icons/camera.png" />
+            <text class="photo-add-text">{{photoUploading ? '上传中...' : '拍摄/上传'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </bottom-sheet>
+</view>

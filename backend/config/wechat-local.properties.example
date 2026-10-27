@@ -1,0 +1,3 @@
+# Copy to wechat-local.properties for local development. The actual file is Git-ignored.
+wechat.miniapp.appid=${WECHAT_APPID:wxb460b87f30a9791b}
+wechat.miniapp.secret=${WECHAT_SECRET:}

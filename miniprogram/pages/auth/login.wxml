@@ -1,0 +1,41 @@
+<view class="login-page">
+  <image wx:if="{{!heroImageFailed}}" class="login-background" src="/assets/photos/login-care.jpg" mode="aspectFill" binderror="onHeroImageError" />
+  <view class="login-shade"></view>
+  <view class="login-content">
+    <view class="brand-lockup">
+      <image class="brand-icon" src="/assets/brand/yilin-icon.png" mode="aspectFit" />
+      <view class="brand-copy">
+        <view class="brand-name">颐邻<text class="brand-dot">.</text></view>
+        <view class="brand-description">社区居家养老</view>
+      </view>
+    </view>
+    <view class="login-spacer"></view>
+    <view class="hero-caption">
+      <view class="hero-eyebrow">熟悉的社区，用心的照护</view>
+      <view class="hero-title">陪伴在身边，<view>安心每一天。</view></view>
+      <view class="hero-description">为自己和家人，安排一份安心。</view>
+    </view>
+    <!-- 先勾选协议、再点登录：与自上而下的操作顺序一致 -->
+    <view class="agreement-section">
+      <view class="agreement-row" bindtap="toggleAgreement" role="checkbox" aria-label="同意服务协议与隐私政策" aria-checked="{{isAgreed}}">
+        <view class="checkbox-hit-area"><view class="custom-checkbox {{isAgreed ? 'is-checked' : ''}}"><view class="check-stroke"></view></view></view>
+        <view class="agreement-label">
+          <text>我已阅读并同意</text>
+          <text class="doc-link" catchtap="openDocModal" data-type="service">《服务协议》</text>
+          <text>及</text>
+          <text class="doc-link" catchtap="openDocModal" data-type="privacy">《隐私政策》</text>
+        </view>
+      </view>
+    </view>
+    <view class="action-section">
+      <button class="btn-quick-login" hover-class="login-button-pressed" hover-stay-time="80" bindtap="handleQuickLogin" loading="{{loggingIn}}" disabled="{{loggingIn}}">{{loggingIn ? '正在登录…' : '微信快捷登录'}}</button>
+    </view>
+    <view class="login-footer">助餐送餐 · 居家助洁 · 陪同照护</view>
+  </view>
+
+  <bottom-sheet show="{{showDocModal}}" title="{{docTitle}}" confirm-text="我已了解并同意" dismiss-text="关闭" bind:close="closeDocModal" bind:confirm="agreeAndCloseDoc" scrollable>
+    <view class="doc-scroll-content">
+      <text class="doc-text">{{docContent}}</text>
+    </view>
+  </bottom-sheet>
+</view>

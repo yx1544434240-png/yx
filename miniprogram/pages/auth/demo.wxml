@@ -1,0 +1,18 @@
+<view class="container onboarding-page {{isElderMode ? 'elder-mode' : ''}}">
+  <view class="onboarding-title">一部手机，演示完整服务</view>
+  <view class="onboarding-note">开发环境专用。此处切换系统测试账号，注册、申请和审核会真实保存到当前数据库。</view>
+  <button class="btn-secondary onboarding-action" bindtap="returnWechat" disabled="{{busy}}">返回微信登录</button>
+  <view class="card" wx:if="{{loading}}">正在加载演示身份…</view>
+  <view class="card" wx:elif="{{failed}}"><view>演示入口暂时无法加载</view><button class="btn-secondary" bindtap="load">重新加载</button></view>
+  <view class="card" wx:elif="{{!enabled}}">当前环境未开放演示模式，请使用微信登录。</view>
+  <view class="onboarding-layout" wx:else>
+    <view class="card"><view class="onboarding-heading">从新用户开始演示</view><view class="onboarding-note">创建独立居民账号，可演示资料完善、家属绑定或申请成为工作人员。不会修改原微信账号。</view>
+      <view class="onboarding-label">演示用户姓名</view><input class="onboarding-input" value="{{realName}}" maxlength="32" placeholder="例如：答辩演示用户" bindinput="onNameInput" disabled="{{busy}}" />
+      <button class="btn-primary onboarding-action" bindtap="createUser" loading="{{busy}}" disabled="{{busy}}">创建演示新用户</button>
+    </view>
+    <view><view class="onboarding-heading">继续已有演示</view><view class="onboarding-note">包含预置角色与最近创建的演示用户，审核后也可从这里重新进入。</view>
+      <view class="card onboarding-account" wx:for="{{accounts}}" wx:key="username"><view><view class="onboarding-heading">{{item.realName}}</view><view class="onboarding-note">{{item.roleText}}{{item.isCurrent ? ' · 当前身份' : ''}}</view></view><button class="btn-secondary" data-username="{{item.username}}" bindtap="switchAccount" disabled="{{busy || item.isCurrent}}">{{item.isCurrent ? '当前' : '进入'}}</button></view>
+      <view wx:if="{{!accounts.length}}" class="onboarding-note">暂无演示账号，可以先创建新用户。</view>
+    </view>
+  </view>
+</view>

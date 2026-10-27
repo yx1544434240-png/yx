@@ -1,0 +1,342 @@
+.feedback-page {
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
+}
+
+.feedback-intro {
+  margin-bottom: 24rpx;
+}
+.feedback-page-title {
+  font-size: var(--font-title);
+  font-weight: 600;
+  color: var(--text-main);
+}
+.feedback-page-subtitle {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  margin-top: 8rpx;
+  line-height: 1.5;
+}
+
+/* 顶部双选项卡切换栏 */
+.feedback-tabs-nav {
+  display: flex;
+  background: #edf3f0;
+  border-radius: 20rpx;
+  padding: 6rpx;
+  margin-bottom: 28rpx;
+  position: relative;
+}
+.feedback-tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  font-size: var(--font-body);
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: 16rpx;
+  position: relative;
+  transition: all 200ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+.feedback-tab-item.active {
+  background: #ffffff;
+  color: var(--primary-color);
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+.tab-badge {
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 20rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  line-height: 32rpx;
+  padding: 0 8rpx;
+  border-radius: 16rpx;
+  font-weight: 600;
+}
+
+/* 卡片分区样式 */
+.form-section-card {
+  margin-bottom: 24rpx;
+  padding: 28rpx 32rpx;
+}
+.section-title {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 18rpx;
+}
+.section-hint {
+  font-size: var(--font-caption);
+  color: var(--primary-dark);
+  font-weight: normal;
+}
+
+/* 类型胶囊标签 */
+.type-capsules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+.type-pill {
+  padding: 12rpx 28rpx;
+  background: #f0f4f2;
+  color: var(--text-secondary);
+  border-radius: 32rpx;
+  font-size: var(--font-caption);
+  font-weight: 500;
+  border: 1.5rpx solid transparent;
+  transition: all 180ms cubic-bezier(.25, 1.4, .5, 1);
+}
+.type-pill.active {
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  border-color: rgba(23, 107, 93, 0.28);
+  font-weight: 600;
+  transform: scale(1.02);
+}
+
+/* 关联订单选择框 */
+.order-picker-box {
+  background: #f8faf9;
+  border: 1.5rpx solid #e1e8e4;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  min-height: 88rpx;
+}
+.picker-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 18rpx;
+  opacity: .75;
+  flex-shrink: 0;
+}
+.picker-main {
+  font-size: var(--font-body);
+  color: var(--text-main);
+  font-weight: 500;
+}
+.picker-sub {
+  font-size: var(--font-meta);
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+}
+
+/* 输入框与文本域 */
+.form-input {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: #f8faf9;
+  border: 1.5rpx solid #e1e8e4;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: var(--font-body);
+  color: var(--text-main);
+  box-sizing: border-box;
+}
+.content-title-gap {
+  margin-top: 24rpx;
+}
+.char-count {
+  font-size: var(--font-meta);
+  color: var(--text-secondary);
+  font-weight: normal;
+}
+.form-textarea {
+  width: 100%;
+  height: 220rpx;
+  background: #f8faf9;
+  border: 1.5rpx solid #e1e8e4;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: var(--font-body);
+  color: var(--text-main);
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+.placeholder-dim {
+  color: #9aa7a0;
+  font-size: var(--font-caption);
+}
+
+/* 承诺卡片 */
+.sla-card {
+  background: rgba(23, 107, 93, 0.06);
+  border: 1.5rpx dashed rgba(23, 107, 93, 0.28);
+  border-radius: 18rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 32rpx;
+}
+.sla-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 18rpx;
+  flex-shrink: 0;
+}
+.sla-title {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+.sla-desc {
+  font-size: var(--font-meta);
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+  line-height: 1.4;
+}
+
+/* 提交按钮 */
+.form-action-box {
+  margin-top: 16rpx;
+}
+.btn-submit {
+  width: 100% !important;
+  border-radius: 44rpx;
+  letter-spacing: 1rpx;
+}
+.btn-submit.is-success {
+  background: #2a8f6d;
+}
+
+/* 历史列表卡片 */
+.history-card {
+  margin-bottom: 24rpx;
+  padding: 28rpx 32rpx;
+}
+.history-header {
+  margin-bottom: 12rpx;
+}
+.history-title {
+  font-size: var(--font-body);
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+.history-meta {
+  font-size: var(--font-meta);
+  color: var(--text-secondary);
+  margin-bottom: 16rpx;
+}
+.history-content {
+  font-size: var(--font-body);
+  color: var(--text-main);
+  line-height: 1.6;
+  background: #f8faf9;
+  padding: 18rpx 22rpx;
+  border-radius: 14rpx;
+}
+
+/* 答复区域 */
+.reply-card {
+  background: #edf7f2;
+  border: 1.5rpx solid #c8e6d7;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-top: 20rpx;
+}
+.reply-header {
+  margin-bottom: 8rpx;
+}
+.reply-icon {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 10rpx;
+}
+.reply-title {
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: #176b5d;
+}
+.reply-text {
+  font-size: var(--font-body);
+  color: #1a4a3e;
+  line-height: 1.6;
+}
+.reply-time {
+  font-size: var(--font-meta);
+  color: #5d8a7c;
+  margin-top: 8rpx;
+}
+
+/* 待处理小圆点提示 */
+.pending-tip {
+  margin-top: 18rpx;
+  font-size: var(--font-meta);
+  color: #8c9c94;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  line-height: 1.4;
+}
+.pending-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: var(--warning-color);
+  flex-shrink: 0;
+}
+
+/* 大字适老模式 */
+.elder-mode .type-pill {
+  font-size: var(--font-body);
+  padding: 16rpx 32rpx;
+}
+.elder-mode .form-input {
+  height: 104rpx;
+  line-height: 104rpx;
+  font-size: var(--font-body);
+}
+.elder-mode .form-textarea {
+  height: 280rpx;
+  font-size: var(--font-body);
+}
+.elder-mode .btn-submit {
+  min-height: 112rpx;
+  line-height: 1.4;
+  font-size: var(--font-body);
+}
+
+/* 平板模式适配 */
+@media (min-width: 600px) {
+  .feedback-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .feedback-intro {
+    margin-bottom: 20px;
+  }
+  .form-section-card {
+    padding: 24px;
+    margin-bottom: 20px;
+    border-radius: 18px;
+  }
+  .feedback-tabs-nav {
+    border-radius: 16px;
+    margin-bottom: 24px;
+  }
+  .feedback-tab-item {
+    padding: 14px 0;
+  }
+  .form-input {
+    height: 48px;
+    line-height: 48px;
+    border-radius: 12px;
+  }
+  .form-textarea {
+    height: 140px;
+    border-radius: 12px;
+  }
+  .btn-submit {
+    height: 52px;
+    line-height: 52px;
+    border-radius: 26px;
+    font-size: 17px;
+  }
+}

@@ -1,0 +1,9 @@
+<view class="container onboarding-page {{isElderMode ? 'elder-mode' : ''}}">
+  <view class="onboarding-title">欢迎加入颐邻</view><view class="onboarding-note">居民账号已创建。完善姓名后，选择您想办理的服务。</view>
+  <view class="card"><view class="onboarding-label">您的姓名</view><input class="onboarding-input" value="{{realName}}" maxlength="32" bindinput="onNameInput" disabled="{{saving}}" placeholder="请输入姓名" /></view>
+  <view class="onboarding-layout">
+    <view class="card"><view class="onboarding-heading">为自己或家人安排照护</view><view class="onboarding-note">老人和家属共用居民账号，通过老人档案及绑定关系确定服务权限。</view><button class="btn-primary onboarding-action" data-kind="elder" bindtap="continueTo" disabled="{{saving}}">建立本人老人档案</button><button class="btn-secondary onboarding-action" data-kind="family" bindtap="continueTo" disabled="{{saving}}">申请绑定家中长辈</button></view>
+    <view class="card"><view class="onboarding-heading">加入社区服务团队</view><view class="onboarding-note">填写入驻资料，社区审核通过后开通工作人员身份，再提交专业资质。</view><button class="btn-primary onboarding-action" data-kind="staff" bindtap="continueTo" disabled="{{saving}}">申请成为服务人员</button></view>
+  </view>
+  <button class="btn-secondary onboarding-action" data-kind="home" bindtap="continueTo" loading="{{saving}}" disabled="{{saving}}">保存姓名，进入首页</button>
+</view>

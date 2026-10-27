@@ -1,0 +1,139 @@
+<view class="page-shell {{isElderMode ? 'elder-mode' : ''}}">
+  <view class="order-header-area">
+    <view class="page-intro">
+      <view class="page-title">我的服务订单</view>
+      <view class="page-subtitle">左右滑动切换不同服务状态，实时跟进照护进度。</view>
+    </view>
+
+    <!-- 滑动选项卡栏 -->
+    <scroll-view class="tabs-scroll" scroll-x="true" scroll-with-animation="true" scroll-into-view="tab-nav-{{currentTabIndex}}">
+      <view class="tabs-bar">
+        <view
+          wx:for="{{tabs}}"
+          wx:key="key"
+          id="tab-nav-{{index}}"
+          class="tab-nav-item {{currentTabIndex === index ? 'active' : ''}}"
+          bindtap="onTabClick"
+          data-index="{{index}}"
+        >
+          <text class="tab-label">{{item.label}}</text>
+        </view>
+        <!-- 平滑滑动下划指示条 -->
+        <view
+          class="tab-slider {{sliderLive ? 'is-live' : ''}}"
+          style="transform: translateX({{sliderShift}}%);"
+        ><view class="slider-line"></view></view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 未登录引导面板 -->
+  <view wx:if="{{!isLoggedIn}}" class="order-unlogin-panel">
+    <view class="unlogin-card card">
+      <view class="unlogin-icon-box">
+        <image src="/assets/icons/order.png" />
+      </view>
+      <view class="unlogin-title">您尚未登录</view>
+      <view class="unlogin-desc">登录后即可查看预约订单并实时跟进照护上门进度。</view>
+      <button class="btn-primary unlogin-action-btn spring" hover-class="spring-in" bindtap="goToLogin">立即登录 / 体验</button>
+    </view>
+  </view>
+
+  <!-- 滑动内容区域 (Swiper 支持左右滑动手势与点击联动) -->
+  <swiper
+    wx:else
+    class="order-swiper"
+    current="{{currentTabIndex}}"
+    duration="220"
+    bindtouchstart="onSwiperTouchStart"
+    bindtransition="onSwiperTransition"
+    bindchange="onSwiperChange"
+    bindanimationfinish="onAnimationFinish"
+  >
+    <swiper-item wx:for="{{tabs}}" wx:key="key" class="swiper-page-item">
+      <scroll-view
+        data-index="{{index}}"
+        class="order-scroll"
+        scroll-y="true"
+        bindscrolltolower="onReachBottomScroll"
+        refresher-enabled="true"
+        bindrefresherrefresh="onRefreshScroll"
+        refresher-triggered="{{tabData[index].isRefreshing}}"
+      >
+        <view class="order-list-content">
+          <!-- 订单卡片列表 -->
+          <view
+            class="card order-card spring"
+            wx:for="{{tabData[index].list}}"
+            wx:for-item="item"
+            wx:key="viewId"
+            hover-class="card-pressed"
+            hover-start-time="0"
+            hover-stay-time="60"
+            bindtap="goToDetail"
+            data-id="{{item.order.id}}"
+          >
+            <view class="service-name-row flex-between card-top">
+              <text class="service-title">{{item.order.serviceNameSnapshot}}</text>
+              <text class="tag {{statusTagMap[item.order.status] || 'tag-info'}}">{{statusTextMap[item.order.status] || item.order.status}}</text>
+            </view>
+
+            <view class="order-time">预约时间：{{item.order.plannedStartText}}</view>
+
+            <view class="order-row">
+              <text>服务对象：{{item.elder ? item.elder.name : '老人'}}</text>
+              <text wx:if="{{item.order.requesterType === 'FAMILY' && item.requesterName}}" class="requester-hint">（家属 {{item.requesterName}} 代约）</text>
+            </view>
+
+            <view class="flex-between order-meta-row">
+              <text class="tag tag-sm {{item.order.requesterType === 'FAMILY' ? 'tag-info' : 'tag-neutral'}}">{{item.order.requesterType === 'FAMILY' ? '家属代约' : '老人自约'}}</text>
+              <text class="service-price">¥{{item.order.priceSnapshot}}</text>
+            </view>
+
+            <view class="card-bottom flex-between" catchtap="noAction">
+              <view class="staff-hint" wx:if="{{item.currentStaff}}">
+                服务人员：{{item.currentStaff.user.realName}} (社区护理员)
+              </view>
+              <view class="staff-hint" wx:else>
+                服务安排请查看详情
+              </view>
+              <button class="btn-primary btn-action" hover-class="button-pressed" catchtap="goToDetail" data-id="{{item.order.id}}">查看进度</button>
+            </view>
+          </view>
+
+          <!-- 首次加载骨架屏占位 -->
+          <view class="order-skeleton-list" wx:if="{{tabData[index].loading && tabData[index].list.length === 0}}">
+            <view class="card order-card skeleton-card" wx:for="{{[1, 2]}}" wx:key="*this">
+              <view class="flex-between">
+                <view class="skeleton-block skeleton-title" style="width: 45%;"></view>
+                <view class="skeleton-block skeleton-tag" style="width: 20%; margin: 0;"></view>
+              </view>
+              <view class="skeleton-block skeleton-body" style="width: 80%; margin-top: 20rpx;"></view>
+              <view class="skeleton-block skeleton-body" style="width: 60%; margin-top: 14rpx;"></view>
+              <view class="flex-between" style="margin-top: 24rpx; padding-top: 18rpx; border-top: 1rpx solid var(--border-color);">
+                <view class="skeleton-block" style="width: 35%; height: 36rpx;"></view>
+                <view class="skeleton-block" style="width: 160rpx; height: 88rpx; border-radius: 12rpx;"></view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 空状态 -->
+          <block wx:if="{{tabData[index].loaded && !tabData[index].error && !tabData[index].loading && tabData[index].list.length === 0}}">
+            <state-view wx:if="{{index === 0}}" icon="/assets/icons/order.png" title="还没有预约记录" description="全部订单包含进行中、已完成和已取消的服务。您可以下拉刷新，或预约新的服务。" action-text="去预约服务" bindaction="goToServices" />
+            <state-view wx:else icon="/assets/icons/order.png" title="暂无{{item.label}}订单" description="可以查看全部订单，了解其他服务的安排和进度。" action-text="查看全部订单" bindaction="showAllOrders" />
+          </block>
+
+          <state-view wx:if="{{tabData[index].error}}" type="error" title="订单暂时未能加载" description="请重试，或检查当前服务连接是否正常。" data-index="{{index}}" bindaction="retryTab" />
+          <view wx:if="{{!tabData[index].loaded && !tabData[index].loading && !tabData[index].error}}" class="loading-more">选择此分类查看订单</view>
+          <!-- 底部提示 -->
+          <view class="loading-more" wx:if="{{tabData[index].loading && !tabData[index].isRefreshing}}">
+            正在加载订单数据…
+          </view>
+          <view class="no-more" wx:elif="{{tabData[index].loaded && !tabData[index].hasMore && tabData[index].list.length > 0}}">
+            — 已展示全部订单 —
+          </view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+</view>

@@ -1,0 +1,60 @@
+<view class="sheet-mask" wx:if="{{rendered}}" bindtap="onMask">
+  <!-- scrollable：只有把手/标题区可拖动，内容区交给 scroll-view 滚动 -->
+  <view
+    wx:if="{{scrollable}}"
+    class="sheet-panel is-scrollable {{dragging ? 'is-dragging' : ''}}"
+    style="{{drag ? 'transform: translateY(' + drag + 'px);' : ''}}"
+    catchtap="noop"
+  >
+    <view class="sheet-drag-area" catchtouchmove="onMove" bindtouchstart="onStart" bindtouchend="onEnd" bindtouchcancel="onCancel">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title" wx:if="{{title}}">{{title}}</view>
+    </view>
+    <scroll-view class="sheet-scroll" scroll-y="true" enhanced="true" show-scrollbar="{{false}}">
+      <view class="sheet-body" wx:if="{{content}}">{{content}}</view>
+      <slot></slot>
+    </scroll-view>
+    <view class="sheet-actions">
+      <button class="sheet-btn sheet-btn-cancel sheet-dismiss" hover-class="spring-in" hover-stay-time="80" bindtap="onDismiss" disabled="{{loading}}">
+        {{dismissText || '取消'}}
+      </button>
+      <button wx:if="{{confirmText}}" class="sheet-btn sheet-btn-confirm sheet-confirm {{tone === 'danger' ? 'is-danger' : ''}} {{success ? 'is-success' : ''}}" hover-class="spring-in" hover-stay-time="80" bindtap="onConfirm" loading="{{loading}}" disabled="{{loading || success}}">
+        <text wx:if="{{success}}">✓ 操作已完成</text>
+        <text wx:else>{{confirmText}}</text>
+      </button>
+    </view>
+  </view>
+  <view
+    wx:else
+    class="sheet-panel {{dragging ? 'is-dragging' : ''}}"
+    style="{{drag ? 'transform: translateY(' + drag + 'px);' : ''}}"
+    catchtap="noop"
+    catchtouchmove="onMove"
+    bindtouchstart="onStart"
+    bindtouchend="onEnd"
+    bindtouchcancel="onCancel"
+  >
+    <view class="sheet-handle"></view>
+
+    <!-- 警示/状态微徽标 -->
+    <view class="sheet-badge {{tone === 'danger' ? 'badge-danger' : (tone === 'success' ? 'badge-success' : 'badge-primary')}}" wx:if="{{tone}}">
+      <text wx:if="{{tone === 'danger'}}" class="badge-symbol">!</text>
+      <text wx:elif="{{tone === 'success'}}" class="badge-symbol">✓</text>
+    </view>
+
+    <view class="sheet-title" wx:if="{{title}}">{{title}}</view>
+    <view class="sheet-body" wx:if="{{content}}">{{content}}</view>
+    <slot></slot>
+
+    <!-- 底部操作按钮组：平权双胶囊并排布局 -->
+    <view class="sheet-actions">
+      <button class="sheet-btn sheet-btn-cancel sheet-dismiss" hover-class="spring-in" hover-stay-time="80" bindtap="onDismiss" disabled="{{loading}}">
+        {{dismissText || '取消'}}
+      </button>
+      <button wx:if="{{confirmText}}" class="sheet-btn sheet-btn-confirm sheet-confirm {{tone === 'danger' ? 'is-danger' : ''}} {{success ? 'is-success' : ''}}" hover-class="spring-in" hover-stay-time="80" bindtap="onConfirm" loading="{{loading}}" disabled="{{loading || success}}">
+        <text wx:if="{{success}}">✓ 操作已完成</text>
+        <text wx:else>{{confirmText}}</text>
+      </button>
+    </view>
+  </view>
+</view>

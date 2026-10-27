@@ -1,0 +1,118 @@
+<view class="container scroll-content-with-bottom {{isElderMode ? 'elder-mode' : ''}}">
+  <view wx:if="{{eldersLoadError}}" class="card"><state-view type="error" title="老人档案加载失败" description="请检查网络后重试" bindaction="loadElders" /></view>
+  <!-- 服务项目概要 -->
+  <view class="card item-summary flex-between" wx:if="{{service}}">
+    <view>
+      <view class="item-title">{{service.name}}</view>
+      <view class="item-time">服务时长：约 {{service.durationMinutes}} 分钟</view>
+      <view class="item-time">老人本人或已绑定的家属均可在订单详情中支付</view>
+    </view>
+    <view class="item-price">¥{{service.price}}</view>
+  </view>
+
+  <!-- 服务对象选择 -->
+  <view class="card form-card">
+    <view class="form-title"><text class="section-number">01</text>为谁预约</view>
+    <picker range="{{elders}}" range-key="pickerLabel" value="{{elderIndex}}" bindchange="onElderChange">
+      <view class="picker-box flex-between">
+        <view wx:if="{{selectedElder}}" class="flex-row items-center flex-1" style="min-width: 0;">
+          <text class="elder-name-text">{{selectedElder.name}} ({{selectedElder.age}}岁 - {{selectedElder.community}})</text>
+          <text class="tag tag-sm {{selectedElder.isSelf ? 'tag-success' : 'tag-info'}}" style="margin-left: 12rpx; flex-shrink: 0;">{{selectedElder.relationDesc || (selectedElder.isSelf ? '本人' : '家属代约')}}</text>
+        </view>
+        <text wx:else class="placeholder">请选择接受服务的老人 ›</text>
+        <image class="picker-arrow-icon" src="/assets/icons/arrow.png" />
+      </view>
+    </picker>
+    <view class="field-error" wx:if="{{formErrors.elder}}">
+      <image class="field-error-icon" src="/assets/icons/care.png" />
+      <text>{{formErrors.elder}}</text>
+    </view>
+    <view class="add-elder-link" bindtap="goToAddElder">+ 新增老人档案</view>
+  </view>
+
+  <!-- 预约时间选择 -->
+  <view class="card form-card">
+    <view class="form-title"><text class="section-number">02</text>希望什么时候上门</view>
+    <view class="slot-label">选择日期</view>
+    <view class="day-chips">
+      <view wx:for="{{bookingDays}}" wx:key="date" class="day-chip {{selectedDate === item.date ? 'is-active' : ''}}" hover-class="spring-in" hover-stay-time="80" bindtap="onDayTap" data-date="{{item.date}}">
+        <text class="day-chip-label">{{item.label}}</text>
+        <text class="day-chip-sub">{{item.sub}}</text>
+      </view>
+    </view>
+    <picker mode="date" value="{{selectedDate}}" start="{{startDate}}" end="{{endDate}}" bindchange="onDateChange">
+      <view class="more-date flex-between">
+        <text>{{selectedDate === bookingDays[0].date || selectedDate === bookingDays[1].date || selectedDate === bookingDays[2].date ? '选择更晚的日期' : '已选：' + friendlyDateText}}</text>
+        <image class="picker-icon" src="/assets/icons/calendar.png" />
+      </view>
+    </picker>
+    <view class="slot-label">选择上门时间</view>
+    <view class="slot-grid">
+      <view wx:for="{{timeSlots}}" wx:key="time" class="slot-chip {{selectedTime === item.time ? 'is-active' : ''}} {{item.disabled ? 'is-disabled' : ''}}" bindtap="onSlotTap" data-time="{{item.time}}" data-disabled="{{item.disabled}}" aria-disabled="{{item.disabled}}">
+        <text class="slot-chip-time">{{item.time}}</text>
+        <text wx:if="{{item.disabled}}" class="slot-chip-note">已过时</text>
+      </view>
+    </view>
+    <view class="slot-empty" wx:if="{{!selectedTime}}">当天已没有可预约的时段，请选择其他日期。</view>
+    <view class="field-error" wx:if="{{formErrors.time}}">
+      <image class="field-error-icon" src="/assets/icons/time.png" />
+      <text>{{formErrors.time}}</text>
+    </view>
+    <view class="time-tip">请至少提前30分钟预约，服务时间以人员安排为准。</view>
+  </view>
+
+  <!-- 上门地址与联系方式 -->
+  <view class="card form-card">
+    <view class="form-title flex-between">
+      <view><text class="section-number">03</text>上门地址与联系信息</view>
+      <view class="map-picker-btn" bindtap="onChooseLocation" hover-class="spring-in">
+        <image class="map-picker-icon" src="/assets/icons/location.png" />
+        <text class="map-text">地图选址</text>
+      </view>
+    </view>
+    <view class="form-item">
+      <text class="form-label">服务详细地址</text>
+      <textarea class="form-textarea" auto-height placeholder="详细居住地址（如楼幢、单元、门牌号）" value="{{address}}" bindinput="onInputAddress" />
+      <view class="coord-badge flex-row" wx:if="{{latitude != null && longitude != null}}">
+        <image class="coord-check-icon" src="/assets/icons/check.png" />
+        <text class="badge-text">已标记上门精准位置</text>
+      </view>
+      <view class="field-error" wx:if="{{formErrors.address}}">
+        <image class="field-error-icon" src="/assets/icons/location.png" />
+        <text>{{formErrors.address}}</text>
+      </view>
+    </view>
+    <view class="form-item">
+      <text class="form-label">联系人姓名</text>
+      <input class="form-input" placeholder="请输入联系人姓名" value="{{contactName}}" bindinput="onInputContactName" />
+      <view class="field-error" wx:if="{{formErrors.contactName}}">
+        <text>{{formErrors.contactName}}</text>
+      </view>
+    </view>
+    <view class="form-item">
+      <text class="form-label">联系电话</text>
+      <input class="form-input" type="number" placeholder="请输入手机号码" value="{{contactPhone}}" bindinput="onInputContactPhone" />
+      <view class="field-error" wx:if="{{formErrors.contactPhone}}">
+        <text>{{formErrors.contactPhone}}</text>
+      </view>
+    </view>
+    <view class="form-item">
+      <text class="form-label">特殊备注</text>
+      <input class="form-input" placeholder="上门联系方法、需要留意的事项（选填）" value="{{remark}}" bindinput="onInputRemark" />
+    </view>
+  </view>
+
+  <!-- 提交下单按钮 -->
+  <view class="submit-box">
+    <view class="submit-price" wx:if="{{service}}">
+      <text class="submit-price-label">预计费用</text>
+      <view>¥{{service.price}}<text> / 次</text></view>
+    </view>
+    <button class="btn-primary btn-submit-order {{submitPhase === 'done' ? 'is-done' : ''}} {{isElderMode ? 'btn-large' : ''}}" hover-class="spring-in" loading="{{submitting && submitPhase !== 'done'}}" disabled="{{submitting}}" bindtap="submitOrder">
+      <text wx:if="{{submitPhase === 'done'}}"></text>
+      <text wx:elif="{{submitting}}">正在提交…</text>
+      <text wx:else>确认提交预约</text>
+      <view wx:if="{{submitPhase === 'done'}}" class="done-check"></view>
+    </button>
+  </view>
+</view>

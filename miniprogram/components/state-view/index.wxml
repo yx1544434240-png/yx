@@ -1,0 +1,6 @@
+<view class="state-view state-view-{{type}}" aria-role="{{type === 'error' ? 'alert' : ''}}">
+  <image wx:if="{{icon}}" class="state-view-icon" src="{{icon}}" mode="aspectFit" />
+  <view class="state-view-title">{{title || (type === 'error' ? '暂时未能加载' : '暂无内容')}}</view>
+  <view wx:if="{{description}}" class="state-view-desc">{{description}}</view>
+  <button wx:if="{{actionText || type === 'error'}}" class="state-view-action {{type === 'error' ? 'retry-button' : 'btn-primary'}}" hover-class="spring-in" hover-stay-time="80" bindtap="onAction">{{actionText || '重新加载'}}</button>
+</view>

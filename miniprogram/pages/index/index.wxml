@@ -1,0 +1,194 @@
+<view class="container home-page {{isElderMode ? 'elder-mode' : ''}}">
+  <!-- 顶部品牌与适老切换 -->
+  <view class="home-header">
+    <view class="home-brand">
+      <image class="home-brand-icon" src="/assets/brand/yilin-icon.png" mode="aspectFit" />
+      <view class="home-brand-copy">
+        <view class="brand-name">颐邻<text>.</text></view>
+        <view class="brand-community">阳光花园社区</view>
+      </view>
+    </view>
+    <!-- 留白区域自然花草藤蔓线条装饰 -->
+    <view class="home-header-deco" aria-hidden="true">
+      <image class="header-floral-art" src="/assets/icons/floral-deco.svg" mode="aspectFit" />
+    </view>
+    <button class="care-mode-control" hover-class="care-mode-pressed" hover-stay-time="80" bindtap="toggleMode">
+      <image src="/assets/icons/care.png" />
+      <text>{{isElderMode ? '标准版' : '大字版'}}</text>
+    </button>
+  </view>
+
+  <!-- 有进行中服务：首屏主卡片 + 大按钮；宫格降级为一行快捷入口 -->
+  <!-- 进行中订单加载占位：与英雄卡同尺寸，避免欢迎区先闪后被顶走 -->
+  <block wx:if="{{!activeOrderReady}}">
+    <view class="home-dashboard">
+    <view class="home-overview">
+    <view class="section-title home-section-heading">
+      <text>今天的服务</text>
+      <text class="section-note">正在查询进度</text>
+    </view>
+    <view class="card active-order-card active-order-hero active-order-skeleton" aria-label="正在查询进行中的服务">
+      <view class="skeleton-block skeleton-order-title"></view>
+      <view class="skeleton-block skeleton-order-meta"></view>
+      <view class="skeleton-block skeleton-order-meta"></view>
+      <view class="skeleton-block skeleton-order-cta"></view>
+    </view>
+    </view>
+    <view class="home-shortcuts">
+    <view class="section-title home-section-heading compact-heading">
+      <text>还需要其他帮助？</text>
+    </view>
+    <view class="service-strip">
+      <view class="service-strip-item" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+        <view class="service-strip-photo skeleton-block"></view>
+        <view class="skeleton-block skeleton-strip-label"></view>
+      </view>
+    </view>
+    </view>
+    </view>
+  </block>
+
+  <block wx:elif="{{activeOrder}}">
+    <view class="home-dashboard">
+    <view class="home-overview">
+    <view class="section-title home-section-heading">
+      <text>今天的服务</text>
+      <text class="section-note">请优先查看进度</text>
+    </view>
+    <view class="card active-order-card active-order-hero">
+      <view class="flex-between active-order-heading">
+        <view class="flex-row items-center active-order-title-group">
+          <view class="service-name">{{activeOrder.order.serviceNameSnapshot}}</view>
+          <text class="tag tag-sm {{activeOrder.order.requesterType === 'FAMILY' ? 'tag-info' : 'tag-neutral'}}">{{activeOrder.order.requesterType === 'FAMILY' ? '家属代约' : '老人自约'}}</text>
+        </view>
+        <view class="active-order-badge">{{statusTextMap[activeOrder.order.status]}}</view>
+      </view>
+      <view class="active-order-meta">
+        <image src="/assets/icons/calendar.png"/>
+        <text>预约上门：{{activeOrder.order.plannedStartText}}</text>
+      </view>
+      <view class="active-order-meta">
+        <image src="/assets/icons/user.png"/>
+        <text>{{activeOrder.elder ? activeOrder.elder.name : '服务对象'}}<text wx:if="{{activeOrder.order.requesterType === 'FAMILY' && activeOrder.requesterName}}">（由 {{activeOrder.requesterName}} 代约）</text><text wx:if="{{activeOrder.currentStaff}}"> · 服务人员 {{activeOrder.currentStaff.user.realName}}</text></text>
+      </view>
+      <button class="btn-primary active-order-cta {{isElderMode ? 'btn-large' : ''}}" hover-class="spring-in" hover-stay-time="80" bindtap="goToOrderDetail" data-id="{{activeOrder.order.id}}">查看服务进度</button>
+      <view wx:if="{{activeMoreCount > 0}}" class="active-more" hover-class="spring-in" hover-stay-time="80" bindtap="goToActiveOrders">还有 {{activeMoreCount}} 个进行中的服务，去订单页查看 ›</view>
+    </view>
+
+    </view>
+    <view class="home-shortcuts">
+    <view class="section-title home-section-heading compact-heading">
+      <text>还需要其他帮助？</text>
+      <view class="more-link" bindtap="goToServiceList">全部服务<image src="/assets/icons/arrow.png" /></view>
+    </view>
+    <view class="service-strip">
+      <view class="service-strip-item spring" hover-class="spring-in" hover-stay-time="80" bindtap="goToService" data-category="MEAL">
+        <view class="service-strip-photo"><service-photo src="{{categoryPhotos.MEAL}}" fallback="{{photoFallbacks.MEAL}}" /></view>
+        <text class="service-strip-label">助餐</text>
+      </view>
+      <view class="service-strip-item spring" hover-class="spring-in" hover-stay-time="80" bindtap="goToService" data-category="CLEANING">
+        <view class="service-strip-photo"><service-photo src="{{categoryPhotos.CLEANING}}" fallback="{{photoFallbacks.CLEANING}}" /></view>
+        <text class="service-strip-label">保洁</text>
+      </view>
+      <view class="service-strip-item spring" hover-class="spring-in" hover-stay-time="80" bindtap="goToService" data-category="ERRAND">
+        <view class="service-strip-photo"><service-photo src="{{categoryPhotos.ERRAND}}" fallback="{{photoFallbacks.ERRAND}}" /></view>
+        <text class="service-strip-label">代办</text>
+      </view>
+      <view class="service-strip-item spring" hover-class="spring-in" hover-stay-time="80" bindtap="goToService" data-category="ESCORT">
+        <view class="service-strip-photo"><service-photo src="{{categoryPhotos.ESCORT}}" fallback="{{photoFallbacks.ESCORT}}" /></view>
+        <text class="service-strip-label">陪同</text>
+      </view>
+    </view>
+    </view>
+    </view>
+  </block>
+
+  <!-- 无进行中服务：欢迎区 + 完整四宫格作为主入口 -->
+  <block wx:else>
+    <view wx:if="{{activeOrderError}}" class="card active-order-error"><state-view type="error" title="服务进度暂时无法获取" description="已有的预约不会丢失，请稍后重试" action-text="重新查询" bindaction="retryActiveOrder" /></view>
+    <view class="welcome-panel">
+      <view class="welcome-kicker">家门口的服务，身边的关怀</view>
+      <view class="welcome-title">
+        <view>照护在身边，</view>
+        <view>安心每一天。</view>
+      </view>
+      <view class="welcome-caption">日常生活的小事，我们一起照应。</view>
+      <view class="welcome-contact" bindtap="callHotline">
+        <image src="/assets/icons/phone.png"/>
+        <text class="contact-label">拨打社区电话</text>
+        <text class="contact-hours">{{hotlineHours}}</text>
+        <image class="contact-arrow" src="/assets/icons/arrow.png" />
+      </view>
+    </view>
+
+    <view class="section-title home-section-heading">
+      <text>今天，需要什么帮助？</text>
+      <text class="section-note">社区便民服务</text>
+    </view>
+    <view class="service-grid-2x2">
+      <view class="service-entry-card spring" hover-class="spring-in" hover-stay-time="80" bindtap="goToService" data-category="MEAL">
+        <view class="service-entry-photo"><service-photo src="{{categoryPhotos.MEAL}}" fallback="{{photoFallbacks.MEAL}}" /></view>
+        <view class="service-card-info">
+          <view class="grid-name">助餐送餐</view>
+          <view class="grid-desc">热餐准时送到家</view>
+        </view>
+      </view>
+      <view class="service-entry-card spring" hover-class="spring-in" hover-stay-time="80" bindtap="goToService" data-category="CLEANING">
+        <view class="service-entry-photo"><service-photo src="{{categoryPhotos.CLEANING}}" fallback="{{photoFallbacks.CLEANING}}" /></view>
+        <view class="service-card-info">
+          <view class="grid-name">居家保洁</view>
+          <view class="grid-desc">居室整理与清洁</view>
+        </view>
+      </view>
+      <view class="service-entry-card spring" hover-class="spring-in" hover-stay-time="80" bindtap="goToService" data-category="ERRAND">
+        <view class="service-entry-photo"><service-photo src="{{categoryPhotos.ERRAND}}" fallback="{{photoFallbacks.ERRAND}}" /></view>
+        <view class="service-card-info">
+          <view class="grid-name">代买代办</view>
+          <view class="grid-desc">买菜配药跑腿办</view>
+        </view>
+      </view>
+      <view class="service-entry-card spring" hover-class="spring-in" hover-stay-time="80" bindtap="goToService" data-category="ESCORT">
+        <view class="service-entry-photo"><service-photo src="{{categoryPhotos.ESCORT}}" fallback="{{photoFallbacks.ESCORT}}" /></view>
+        <view class="service-card-info">
+          <view class="grid-name">陪同办事</view>
+          <view class="grid-desc">就医陪诊出行看护</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 推荐服务列表 -->
+  <view class="section-title home-section-heading">
+    <text>为您提供的服务</text>
+    <view class="more-link" bindtap="goToServiceList">查看全部<image src="/assets/icons/arrow.png" /></view>
+  </view>
+  <!-- 推荐列表骨架：与真实服务卡片同尺寸，避免加载完成时页面跳动 -->
+  <view wx:if="{{servicesLoading}}" class="service-list" aria-label="正在为您查找社区服务">
+    <view class="card home-service-card" wx:for="{{[1,2,3]}}" wx:key="*this">
+      <view class="service-list-icon skeleton-block"></view>
+      <view class="service-main">
+        <view class="skeleton-block skeleton-list-title"></view>
+        <view class="skeleton-block skeleton-list-desc"></view>
+        <view class="skeleton-block skeleton-list-meta"></view>
+      </view>
+    </view>
+  </view>
+  <view wx:elif="{{serviceError}}" class="card"><state-view type="error" title="服务信息暂时未能加载" description="请检查网络后重试" bindaction="loadServiceItems" /></view>
+  <view wx:elif="{{!serviceItems.length}}" class="card"><state-view title="新的社区服务正在准备中" description="可先拨打社区热线咨询" /></view>
+  <view wx:else class="service-list">
+    <view class="card home-service-card spring" hover-class="spring-in" hover-stay-time="80" wx:for="{{serviceItems}}" wx:key="id" bindtap="goToServiceDetail" data-id="{{item.id}}">
+      <view class="service-list-icon"><service-photo src="{{item.imageUrl}}" fallback="{{item.imageFallback}}" /></view>
+      <view class="service-main">
+        <view class="item-title">{{item.name}}</view>
+        <view class="item-desc">{{item.description}}</view>
+        <view class="item-meta">
+          <text class="price">¥{{item.price}}</text>
+          <text class="duration"> / 次 · 约{{item.durationMinutes}}分钟</text>
+        </view>
+      </view>
+      <image class="ui-icon-small" src="/assets/icons/arrow.png"/>
+    </view>
+  </view>
+
+  <view class="home-footer">熟悉的社区 · 用心的照护</view>
+</view>

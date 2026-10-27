@@ -1,0 +1,62 @@
+<view class="container page-state {{isElderMode ? 'elder-mode' : ''}}" wx:if="{{!service}}">
+  <view wx:if="{{loading}}" aria-label="正在加载服务详情">
+    <view class="detail-cover skeleton-block"></view>
+    <view class="card main-info-card">
+      <view class="skeleton-block skeleton-title"></view>
+      <view class="skeleton-block skeleton-price"></view>
+      <view class="flex-row tags-row">
+        <view class="skeleton-block skeleton-tag"></view>
+        <view class="skeleton-block skeleton-tag"></view>
+      </view>
+    </view>
+    <view class="card detail-section">
+      <view class="skeleton-block skeleton-section"></view>
+      <view class="skeleton-block skeleton-body"></view>
+      <view class="skeleton-block skeleton-body skeleton-short"></view>
+    </view>
+    <view class="card detail-section">
+      <view class="skeleton-block skeleton-section"></view>
+      <view class="tips-item"><view class="skeleton-block skeleton-tip"></view></view>
+      <view class="tips-item"><view class="skeleton-block skeleton-tip"></view></view>
+      <view class="tips-item"><view class="skeleton-block skeleton-tip skeleton-short"></view></view>
+    </view>
+    <view class="page-state-tip">正在加载服务详情…</view>
+  </view>
+  <view class="card" wx:elif="{{missingId}}"><state-view type="empty" title="没有找到这项服务" description="链接可能不完整，请回到首页查看" action-text="回到首页" bindaction="goHome" /></view>
+  <view class="card" wx:elif="{{loadError}}"><state-view type="error" title="服务信息暂时未能加载" description="请检查网络后重试" bindaction="loadServiceDetail" /></view>
+</view>
+<view class="container scroll-content-with-bottom {{isElderMode ? 'elder-mode' : ''}}" wx:if="{{service}}">
+  <view class="detail-cover">
+    <service-photo src="{{service.imageUrl}}" fallback="{{service.imageFallback}}" />
+  </view>
+  <view class="card main-info-card">
+    <view class="service-title">{{service.name}}</view>
+    <view class="service-price">¥{{service.price}} <text class="unit">/ 次</text></view>
+    <view class="flex-row tags-row">
+      <text class="tag tag-info">服务时长：{{service.durationMinutes}}分钟</text>
+      <text class="tag tag-success" style="margin-left: 16rpx;">覆盖：{{service.serviceArea}}</text>
+    </view>
+  </view>
+
+  <view class="card detail-section">
+    <view class="section-title">服务介绍与内容</view>
+    <view class="content-text">{{service.description}}</view>
+  </view>
+
+  <view class="card detail-section">
+    <view class="section-title">预约须知</view>
+    <view class="tips-item">• 服务至少提前30分钟预约，由平台为您智能匹配合适的服务人员。</view>
+    <view class="tips-item">• 预约后可在订单中查看安排进度与服务人员信息，上门前请保持电话畅通。</view>
+    <view class="tips-item">• 服务开始前，可在订单详情中取消预约；服务完成后，请核对记录并确认。</view>
+  </view>
+
+  <!-- 底部固定预约栏 -->
+  <view class="bottom-bar flex-between">
+    <view>
+      <text class="price-label">总计：</text>
+      <text class="total-price">¥{{service.price}}</text>
+    </view>
+    <button class="btn-primary btn-submit {{isElderMode ? 'btn-large' : ''}}" hover-class="spring-in" hover-stay-time="80" bindtap="goToBook">立即预约服务</button>
+  </view>
+  <bottom-sheet show="{{loginSheet}}" title="请先登录" content="登录后即可预约服务，并为家人和自己查看进度。" confirm-text="去登录" dismiss-text="再想想" bind:close="closeLoginSheet" bind:confirm="confirmLogin"></bottom-sheet>
+</view>

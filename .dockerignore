@@ -1,0 +1,11 @@
+.git
+**/node_modules
+**/target
+**/dist
+**/uploads
+**/config/*local.properties
+.env
+.env.*
+design
+.agents
+.grok

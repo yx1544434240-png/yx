@@ -1,0 +1,27 @@
+.card-title { font-size: var(--font-section); font-weight: 600; margin-bottom: 18rpx; }
+.form-tip { font-size: var(--font-caption); color: var(--text-secondary); line-height: 1.85; margin-bottom: 34rpx; }
+.form-item { margin-bottom: 30rpx; }
+.label { display: block; font-size: var(--font-caption); color: var(--text-regular); margin-bottom: 14rpx; }
+.picker-box, .input-box { background: #f7f9f5; border: 1rpx solid var(--border-color); border-radius: 14rpx; min-height: var(--control-height); padding: 22rpx; font-size: var(--font-body); }
+.input-box { height: var(--control-height); min-width: 0; }
+.placeholder, .arrow { color: var(--text-secondary); }
+.search-row { gap: 14rpx; }
+.search-row .input-box { flex: 1; }
+.search-button { min-height: var(--control-height); background: var(--primary-soft); color: var(--primary-dark); padding: 20rpx 28rpx; font-size: var(--font-body); border-radius: 14rpx; display: flex; align-items: center; margin: 0; }
+.search-result { margin-top: 14rpx; color: var(--primary-dark); font-size: var(--font-caption); }
+.btn-apply { margin-top: 34rpx; }
+.binding-item { align-items: flex-start; }
+.elder-title { font-size: var(--font-body); font-weight: 600; }
+.bind-meta { font-size: var(--font-caption); color: var(--text-secondary); margin-top: 14rpx; overflow-wrap: anywhere; }
+.revoke-btn { margin-top: 16rpx; min-height: 88rpx; display: flex; align-items: center; justify-content: flex-end; padding: 12rpx 16rpx; text-align: right; color: var(--danger-color); font-size: var(--font-caption); min-width: 88rpx; }
+.elder-mode .binding-item { flex-wrap: wrap; }
+
+/* 两步绑定 */
+.bind-steps { display: flex; gap: 12rpx; margin-bottom: 30rpx; }
+.bind-step { flex: 1; display: flex; align-items: center; gap: 10rpx; min-height: 72rpx; padding: 0 16rpx; border-radius: 14rpx; background: #f1f4ef; color: var(--text-secondary); font-size: var(--font-meta); }
+.bind-step.is-active { background: var(--primary-soft); color: var(--primary-dark); font-weight: 600; }
+.bind-step-no { width: 40rpx; height: 40rpx; line-height: 40rpx; border-radius: 50%; text-align: center; background: #fff; flex-shrink: 0; }
+.elder-confirm-card { background: #f3f8f1; border-color: #d4e4d9; margin: 6rpx 0 0; }
+.elder-confirm-title { display: flex; align-items: center; gap: 12rpx; font-size: var(--font-body); font-weight: 600; color: var(--primary-dark); }
+.elder-summary { padding: 20rpx 24rpx; border-radius: 14rpx; background: #f3f8f1; margin-bottom: 30rpx; align-items: center; }
+.change-elder { min-height: 88rpx; min-width: 88rpx; display: flex; align-items: center; justify-content: flex-end; color: var(--primary-color); font-size: var(--font-caption); padding-left: 16rpx; flex-shrink: 0; }

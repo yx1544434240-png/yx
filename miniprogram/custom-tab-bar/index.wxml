@@ -1,0 +1,18 @@
+<view wx:if="{{!overlayHidden}}" class="custom-tab-bar {{isElderMode ? 'is-elder' : ''}}">
+  <view class="tab-bar-content">
+    <view class="tab-indicator" style="width: {{100 / (list.length || 1)}}%; transform: translateX({{selected * 100}}%);" aria-hidden="true">
+      <view class="indicator-pill"></view>
+    </view>
+    <view wx:for="{{list}}" wx:key="pagePath"
+      class="tab-bar-item {{selected === index ? 'is-active' : ''}}"
+      aria-role="button" aria-label="{{item.text}}{{selected === index ? '，当前页面' : ''}}"
+      hover-class="tab-bar-item-pressed" hover-start-time="0" hover-stay-time="60"
+      bindtap="switchTab" data-index="{{index}}">
+      <view class="icon-wrapper">
+        <image class="tab-icon" src="{{selected === index ? item.selectedIconPath : item.iconPath}}" mode="aspectFit" aria-hidden="true" />
+      </view>
+      <text class="tab-label">{{item.text}}</text>
+    </view>
+  </view>
+  <view class="tab-safe-area" aria-hidden="true"></view>
+</view>

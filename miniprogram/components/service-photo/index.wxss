@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+service-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.service-photo {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  background: #eaf0e3;
+  object-fit: cover;
+}

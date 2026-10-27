@@ -1,0 +1,102 @@
+<view class="service-page {{isElderMode ? 'elder-mode' : ''}}">
+  <view class="listing-header-area">
+    <view class="listing-header">
+      <view class="listing-title">家门口的贴心服务</view>
+      <view class="listing-caption">按您的需要，左右滑动挑选最合适的居家照护。</view>
+    </view>
+
+    <!-- 平滑滑动分类选项栏 -->
+    <scroll-view class="category-scroll" scroll-x="true" scroll-with-animation="true" scroll-into-view="cat-nav-{{currentCatIndex}}">
+      <view class="category-bar">
+        <view
+          wx:for="{{categories}}"
+          wx:key="key"
+          id="cat-nav-{{index}}"
+          class="cat-nav-item {{currentCatIndex === index ? 'active' : ''}}"
+          bindtap="changeCat"
+          data-index="{{index}}"
+        >
+          <text class="cat-label">{{item.label}}</text>
+        </view>
+        <!-- 平滑滑动下划指示条 -->
+        <view
+          class="cat-slider {{sliderLive ? 'is-live' : ''}}"
+          style="transform: translateX({{sliderShift}}%);"
+        ><view class="slider-line"></view></view>
+      </view>
+    </scroll-view>
+  </view>
+
+    <!-- 骨架屏占位 -->
+  <view wx:if="{{loading && !loaded}}" class="service-skeleton-list" style="padding: 0 32rpx;">
+    <view class="card service-item skeleton-card flex-row" wx:for="{{[1, 2, 3]}}" wx:key="*this" style="gap: 24rpx; padding: 28rpx; align-items: center;">
+      <view class="skeleton-block" style="width: 160rpx; height: 160rpx; border-radius: 16rpx; flex-shrink: 0;"></view>
+      <view style="flex: 1; min-width: 0;">
+        <view class="skeleton-block skeleton-title" style="width: 55%; height: 44rpx;"></view>
+        <view class="skeleton-block skeleton-body" style="width: 85%; height: 28rpx; margin-top: 16rpx;"></view>
+        <view class="flex-between" style="margin-top: 24rpx;">
+          <view class="skeleton-block" style="width: 32%; height: 42rpx;"></view>
+          <view class="skeleton-block" style="width: 140rpx; height: 72rpx; border-radius: 999rpx;"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <state-view wx:elif="{{loadError && !loaded}}" type="error" title="服务暂时未能加载" description="请检查网络后重试" bindaction="loadServices" />
+
+  <!-- 滑动内容区域 (Swiper 支持平滑左右手势滑动) -->
+  <swiper
+    wx:else
+    class="service-swiper"
+    current="{{currentCatIndex}}"
+    duration="220"
+    bindtouchstart="onSwiperTouchStart"
+    bindtransition="onSwiperTransition"
+    bindchange="onSwiperChange"
+    bindanimationfinish="onAnimationFinish"
+  >
+    <swiper-item wx:for="{{categories}}" wx:key="key" class="swiper-page-item">
+      <scroll-view wx:if="{{visibleTabs[index]}}" class="service-scroll" scroll-y="true">
+        <view class="service-list-content">
+          <view
+            class="card service-card spring"
+            wx:for="{{catServices[index]}}"
+            wx:key="id"
+            hover-class="card-pressed"
+            hover-start-time="0"
+            hover-stay-time="60"
+            bindtap="goToDetail"
+            data-id="{{item.id}}"
+          >
+            <view class="service-card-main">
+              <view class="service-picture">
+                <service-photo src="{{item.imageUrl}}" fallback="{{item.imageFallback}}" />
+              </view>
+              <view class="service-copy">
+                <view class="item-name">{{item.name}}</view>
+                <view class="item-desc">{{item.description}}</view>
+                <view class="service-meta">
+                  <text>{{item.durationMinutes}}分钟</text>
+                  <text> · </text>
+                  <text>{{item.serviceArea}}</text>
+                </view>
+              </view>
+            </view>
+            <view class="item-footer">
+              <view>
+                <text class="item-price">¥{{item.price}}</text>
+                <text class="price-unit"> / 次</text>
+              </view>
+              <button class="btn-primary book-button" hover-class="button-pressed" catchtap="goToDetail" data-id="{{item.id}}">
+                查看并预约
+                <image src="/assets/icons/arrow.png" />
+              </button>
+            </view>
+          </view>
+
+          <!-- 分类为空的提示 -->
+          <state-view wx:if="{{catServices[index].length === 0}}" title="暂无该分类的服务" description="可左右滑动看看其他项目" />
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </swiper>
+</view>

@@ -1,0 +1,174 @@
+<view class="container feedback-page {{isElderMode ? 'elder-mode' : ''}}">
+  <!-- 顶栏导言与模式说明 -->
+  <view class="feedback-intro">
+    <view class="feedback-page-title">服务建议与反馈</view>
+    <view class="feedback-page-subtitle">记录服务中的意见，在反馈记录中查看社区处理进度和答复。</view>
+  </view>
+
+  <!-- 顶部双标签切换 (我要反馈 / 反馈记录) -->
+  <view class="feedback-tabs-nav flex-row">
+    <view class="feedback-tab-item {{activeTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-tab="0">
+      <text class="tab-title">我要反馈</text>
+      <view class="tab-slider-line" wx:if="{{activeTab === 0}}"></view>
+    </view>
+    <view class="feedback-tab-item {{activeTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-tab="1">
+      <text class="tab-title">反馈记录</text>
+      <text class="tab-badge" wx:if="{{historyList.length > 0}}">{{historyList.length}}</text>
+      <view class="tab-slider-line" wx:if="{{activeTab === 1}}"></view>
+    </view>
+  </view>
+
+  <!-- ==================== 选项卡 0：我要反馈 ==================== -->
+  <view class="tab-content" wx:if="{{activeTab === 0}}">
+    <!-- 快捷类型胶囊选择 -->
+    <view class="card form-section-card">
+      <view class="section-title">反馈类型</view>
+      <view class="type-capsules flex-row">
+        <view
+          wx:for="{{feedbackTypes}}"
+          wx:key="*this"
+          class="type-pill {{selectedType === item ? 'active' : ''}}"
+          bindtap="selectType"
+          data-type="{{item}}"
+          hover-class="spring-in"
+          hover-stay-time="60"
+        >
+          {{item}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 关联服务单据 (若有) -->
+    <view class="card form-section-card">
+      <view class="section-title flex-between">
+        <text>关联服务单据</text>
+        <text class="section-hint" wx:if="{{orderId}}">已自动关联当前订单</text>
+      </view>
+
+      <picker bindchange="onOrderPickerChange" value="{{selectedOrderIndex}}" range="{{orderPickerOptions}}" range-key="label">
+        <view class="order-picker-box flex-between" hover-class="spring-in" hover-stay-time="60">
+          <view class="picker-display flex-row items-center">
+            <image class="picker-icon" src="/assets/icons/order.png" />
+            <view class="picker-text">
+              <view class="picker-main">{{orderPickerOptions[selectedOrderIndex].label || '点击选择关联的服务单据'}}</view>
+              <view class="picker-sub" wx:if="{{orderPickerOptions[selectedOrderIndex].sub}}">{{orderPickerOptions[selectedOrderIndex].sub}}</view>
+            </view>
+          </view>
+          <image class="menu-arrow" src="/assets/icons/arrow.png" />
+        </view>
+      </picker>
+    </view>
+
+    <!-- 主题与详细内容输入卡片 -->
+    <view class="card form-section-card">
+      <view class="section-title">反馈主题</view>
+      <input
+        class="form-input"
+        placeholder="简要概括主题（如：上门时间偏晚、人员态度很耐心等）"
+        placeholder-class="placeholder-dim"
+        value="{{title}}"
+        bindinput="onInputTitle"
+        maxlength="60"
+      />
+
+      <view class="section-title content-title-gap flex-between">
+        <text>详细说明与期望</text>
+        <text class="char-count">{{content.length || 0}}/400</text>
+      </view>
+      <textarea
+        class="form-textarea"
+        placeholder="请详细描述您遇到的情况、改进建议或期待的处理方案，责任督导核实后将向您答复..."
+        placeholder-class="placeholder-dim"
+        value="{{content}}"
+        bindinput="onInputContent"
+        maxlength="400"
+        cursor-spacing="140"
+      />
+    </view>
+
+    <!-- 社区服务承诺 -->
+    <view class="sla-card flex-row items-center">
+      <image class="sla-icon" src="/assets/icons/check.png" />
+      <view class="sla-text">
+        <view class="sla-title">颐邻社区网格响应承诺</view>
+        <view class="sla-desc">所有意见与建议均由社区服务主管与责任网格员在 24 小时内核查处理，并提供跟进答复。</view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="form-action-box">
+      <button
+        class="btn-primary btn-submit {{isElderMode ? 'btn-large' : ''}} {{submitSuccess ? 'is-success' : ''}}"
+        hover-class="spring-in"
+        hover-stay-time="80"
+        loading="{{submitting}}"
+        disabled="{{submitting || submitSuccess}}"
+        bindtap="submitFeedback"
+      >
+        <text wx:if="{{submitSuccess}}">✓ 反馈已送达社区</text>
+        <text wx:elif="{{submitting}}">正在提交反馈…</text>
+        <text wx:else>提交服务建议与反馈</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- ==================== 选项卡 1：我的反馈记录 ==================== -->
+  <view class="tab-content" wx:elif="{{activeTab === 1}}">
+    <!-- 加载中骨架 -->
+    <view class="history-loading-box" wx:if="{{historyLoading && historyList.length === 0}}">
+      <view class="card skeleton-card" wx:for="{{[1, 2]}}" wx:key="*this">
+        <view class="skeleton-block" style="width: 50%; height: 40rpx; margin-bottom: 20rpx;"></view>
+        <view class="skeleton-block" style="width: 80%; height: 32rpx; margin-bottom: 14rpx;"></view>
+        <view class="skeleton-block" style="width: 60%; height: 32rpx;"></view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <state-view
+      wx:elif="{{historyLoaded && historyList.length === 0}}"
+      icon="/assets/icons/feedback.png"
+      title="暂无反馈与建议记录"
+      description="您对社区居家照护的每一次建言，都是我们进步的重要方向"
+      action-text="我要提建议"
+      bindaction="switchToForm"
+    />
+
+    <!-- 记录列表 -->
+    <view class="history-list" wx:else>
+      <view class="card history-card spring" wx:for="{{historyList}}" wx:key="id">
+        <view class="history-header flex-between">
+          <view class="history-title-box flex-row items-center">
+            <text class="history-title">{{item.complaintTitle}}</text>
+          </view>
+          <text class="tag {{item.status === 'RESOLVED' ? 'tag-success' : 'tag-warning'}}">
+            {{item.statusText}}
+          </text>
+        </view>
+
+        <view class="history-meta flex-between">
+          <text class="history-time">{{item.createdAtText}}</text>
+          <text class="history-order" wx:if="{{item.orderId && item.orderId !== '0'}}">关联单据: #{{item.orderId}}</text>
+          <text class="history-order" wx:else>社区通用建议</text>
+        </view>
+
+        <view class="history-content">{{item.complaintContent}}</view>
+
+        <!-- 社区处理答复卡片 (办结后展示) -->
+        <view class="reply-card" wx:if="{{item.status === 'RESOLVED' && item.handleResult}}">
+          <view class="reply-header flex-row items-center">
+            <image class="reply-icon" src="/assets/icons/check.png" />
+            <text class="reply-title">社区处置核实答复</text>
+          </view>
+          <view class="reply-text">{{item.handleResult}}</view>
+          <view class="reply-time" wx:if="{{item.handledAtText}}">答复时间：{{item.handledAtText}}</view>
+        </view>
+
+        <!-- 待处理提示 -->
+        <view class="pending-tip" wx:else>
+          <text class="pending-dot"></text>
+          <text>{{item.status === 'PROCESSING' ? '社区已受理，正在核实并协调处理。' : (item.status === 'REJECTED' ? '该反馈已关闭，可联系社区了解详情。' : '您的意见已送达社区，尚待受理。')}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

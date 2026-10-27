@@ -1,0 +1,225 @@
+<view class="container profile-page {{isElderMode ? 'elder-mode' : ''}}">
+  <view class="profile-intro">{{userInfo && userInfo.role === 'STAFF' ? '服务人员执业档案与中心' : '我的照护与社区生活'}}</view>
+
+  <!-- 用户头部身份卡片 -->
+  <view class="profile-hero {{userInfo && userInfo.role === 'STAFF' ? 'hero-staff' : (userInfo && userInfo.role === 'ADMIN' ? 'hero-admin' : '')}}">
+    <view class="profile-avatar {{userInfo && userInfo.role === 'STAFF' ? 'staff-hero-avatar' : ''}}" bindtap="chooseAndUploadAvatar" hover-class="avatar-tap" hover-stay-time="80" aria-label="点击更换个人头像">
+      <image wx:if="{{userInfo && userInfo.avatar}}" class="avatar-photo" mode="aspectFill" src="{{userInfo.avatar[0] === '/' ? currentBaseUrl + userInfo.avatar : userInfo.avatar}}" />
+      <image wx:else class="avatar-default-icon" src="{{userInfo && userInfo.role === 'STAFF' ? '/assets/icons/staff.png' : '/assets/icons/user.png'}}" />
+      <view class="avatar-edit-badge" wx:if="{{userInfo}}">
+        <image class="avatar-edit-icon" src="/assets/icons/camera.png" />
+      </view>
+    </view>
+    <view class="profile-identity">
+      <view class="user-name">{{userInfo ? (userInfo.realName || userInfo.username) : '欢迎来到颐邻社区养老'}}</view>
+      <view class="user-sub">
+        <text class="role-badge" wx:if="{{userInfo}}">{{roleTextMap[userInfo.role] || userInfo.role}}</text>
+        <text wx:else>登录后，为自己和家人安排养老照料</text>
+      </view>
+    </view>
+
+    <!-- 角色专属艺术线条装饰 -->
+    <view class="profile-hero-deco" aria-hidden="true">
+      <image wx:if="{{!userInfo}}" class="role-line-art deco-guest" mode="aspectFit" src="/assets/icons/role-line-guest.png" />
+      <image wx:elif="{{userInfo.role === 'STAFF'}}" class="role-line-art deco-staff" mode="aspectFit" src="/assets/icons/role-line-staff.png" />
+      <image wx:elif="{{userInfo.role === 'ADMIN'}}" class="role-line-art deco-admin" mode="aspectFit" src="/assets/icons/role-line-admin.png" />
+      <image wx:else class="role-line-art deco-resident" mode="aspectFit" src="/assets/icons/role-line-resident.png" />
+    </view>
+  </view>
+
+  <!-- 未登录状态进入登录页面 -->
+  <button wx:if="{{!userInfo}}" class="btn-primary profile-login" hover-class="spring-in" hover-stay-time="80" bindtap="goToLogin">立即登录 / 注册</button>
+
+  <!-- ==================== 工作人员专属视角 (STAFF) ==================== -->
+  <block wx:if="{{userInfo && userInfo.role === 'STAFF'}}">
+    <!-- 执业数据概览看板 -->
+    <view class="card staff-stats-card">
+      <view class="staff-stats-header flex-between">
+        <text class="staff-stats-title">服务执业概览</text>
+        <view class="staff-status-pill {{staffProfile && staffProfile.currentStatus === 'AVAILABLE' ? 'staff-status-available' : (staffProfile && staffProfile.currentStatus === 'BUSY' ? 'staff-status-busy' : 'staff-status-resting')}}">{{staffProfile && staffProfile.currentStatus === 'AVAILABLE' ? '在岗接单中' : (staffProfile && staffProfile.currentStatus === 'BUSY' ? '现场服务中' : '休息中')}}</view>
+      </view>
+      <view class="staff-stats-grid">
+        <view class="staff-stat-item">
+          <view class="staff-stat-num">{{staffProfile && staffProfile.priorRating != null ? staffProfile.priorRating : '—'}}<text class="staff-stat-unit" wx:if="{{staffProfile && staffProfile.priorRating != null}}">分</text></view>
+          <text class="staff-stat-desc">综合服务评分</text>
+        </view>
+        <view class="staff-stat-item">
+          <view class="staff-stat-num">{{staffProfile && staffProfile.totalOrders != null ? staffProfile.totalOrders : '0'}}<text class="staff-stat-unit">单</text></view>
+          <text class="staff-stat-desc">累计完成订单</text>
+        </view>
+        <view class="staff-stat-item">
+          <view class="staff-stat-num">{{staffSkills ? staffSkills.length : 0}}<text class="staff-stat-unit">项</text></view>
+          <text class="staff-stat-desc">认证专业技能</text>
+        </view>
+      </view>
+      <view class="staff-station-bar flex-row">
+        <image src="/assets/icons/location.png" />
+        <text>服务基站：{{staffProfile && staffProfile.baseStationName ? staffProfile.baseStationName : '暂未分配基站'}} ({{staffProfile && staffProfile.serviceArea ? staffProfile.serviceArea : '本社区网格'}})</text>
+      </view>
+    </view>
+
+    <!-- 工作人员专属菜单 -->
+    <view class="card menu-card">
+      <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="goToWorkbench">
+        <view class="menu-icon-wrap"><image src="/assets/icons/staff.png" /></view>
+        <view class="menu-copy">
+          <view class="menu-label">服务人员工作台</view>
+          <view class="menu-description">接单响应、现场签到打卡与履约总结提交</view>
+        </view>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+
+      <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="showSkillsModal">
+        <view class="menu-icon-wrap"><image src="/assets/icons/check.png" /></view>
+        <view class="menu-copy">
+          <view class="menu-label">我的资质证明</view>
+          <view class="menu-description">上传证书材料，查看审核结果</view>
+        </view>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+
+      <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="contactSupportSheet">
+        <view class="menu-icon-wrap"><image src="/assets/icons/phone.png" /></view>
+        <view class="menu-copy">
+          <view class="menu-label">调度中心与应急支援</view>
+          <view class="menu-description">调度站协同、责任网格长联系与医疗急救</view>
+        </view>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+
+      <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="goToFeedback">
+        <view class="menu-icon-wrap"><image src="/assets/icons/feedback.png" /></view>
+        <view class="menu-copy">
+          <view class="menu-label">工作建议与社区建言</view>
+          <view class="menu-description">一线照护反馈与平台优化建议，跟进处理答复</view>
+        </view>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+    </view>
+  </block>
+
+  <!-- ==================== 社区居民视角 (RESIDENT / 未登录) ==================== -->
+  <block wx:else>
+    <!-- 我的服务订单快捷看板 -->
+    <view class="card order-hub-card" wx:if="{{userInfo}}">
+      <view class="hub-header flex-between" bindtap="goToOrderList" data-status="">
+        <text class="hub-title">我的服务订单</text>
+        <view class="hub-all flex-row">
+          <text>全部服务</text>
+          <image class="menu-arrow" src="/assets/icons/arrow.png" />
+        </view>
+      </view>
+      <view class="hub-grid">
+        <view class="hub-item" bindtap="goToOrderList" data-status="WAIT_DISPATCH">
+          <view class="hub-icon-wrap"><image src="/assets/icons/time.png" /><text wx:if="{{hubCounts.WAIT_DISPATCH}}" class="hub-badge">{{hubCounts.WAIT_DISPATCH}}</text></view>
+          <text class="hub-label">待调度</text>
+        </view>
+        <view class="hub-item" bindtap="goToOrderList" data-status="WAIT_VISIT">
+          <view class="hub-icon-wrap"><image src="/assets/icons/calendar.png" /><text wx:if="{{hubCounts.WAIT_VISIT}}" class="hub-badge">{{hubCounts.WAIT_VISIT}}</text></view>
+          <text class="hub-label">待上门</text>
+        </view>
+        <view class="hub-item" bindtap="goToOrderList" data-status="IN_SERVICE">
+          <view class="hub-icon-wrap"><image src="/assets/icons/staff.png" /><text wx:if="{{hubCounts.IN_SERVICE}}" class="hub-badge">{{hubCounts.IN_SERVICE}}</text></view>
+          <text class="hub-label">服务中</text>
+        </view>
+        <view class="hub-item" bindtap="goToOrderList" data-status="WAIT_CONFIRM">
+          <view class="hub-icon-wrap"><image src="/assets/icons/check.png" /><text wx:if="{{hubCounts.WAIT_CONFIRM}}" class="hub-badge">{{hubCounts.WAIT_CONFIRM}}</text></view>
+          <text class="hub-label">待确认</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 核心照护服务菜单 -->
+    <view class="card menu-card">
+      <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="goToElderList">
+        <view class="menu-icon-wrap"><image src="/assets/icons/user.png" /></view>
+        <view class="menu-copy">
+          <view class="menu-label">老人档案管理</view>
+          <view class="menu-description">登记长辈健康状况、自理评级与住址</view>
+        </view>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+
+      <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="goToFamily">
+        <view class="menu-icon-wrap"><image src="/assets/icons/family.png" /></view>
+        <view class="menu-copy">
+          <view class="menu-label">家属代约绑定</view>
+          <view class="menu-description">绑定父母长辈，远程代办与进度查看</view>
+        </view>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+
+      <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="goToFeedback">
+        <view class="menu-icon-wrap"><image src="/assets/icons/feedback.png" /></view>
+        <view class="menu-copy">
+          <view class="menu-label">服务建议与反馈</view>
+          <view class="menu-description">向社区提交照护意见与建言，随时查看处置答复</view>
+        </view>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+
+      <!-- 便民服务 ActionSheet 唤起 -->
+      <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="contactSupportSheet">
+        <view class="menu-icon-wrap"><image src="/assets/icons/phone.png" /></view>
+        <view class="menu-copy">
+          <view class="menu-label">社区便民与应急服务</view>
+          <view class="menu-description">养老服务热线（{{hotlineHours}}）、家庭医生直通车与责任网格员</view>
+        </view>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+    </view>
+  </block>
+
+  <view class="card menu-card" wx:if="{{userInfo && userInfo.role === 'RESIDENT'}}">
+    <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="goToStaffApplication">
+      <view class="menu-icon-wrap"><image src="/assets/icons/staff.png" /></view>
+      <view class="menu-copy"><view class="menu-label">申请成为服务人员</view><view class="menu-description">提交入驻资料，查看社区审核结果</view></view>
+      <image class="menu-arrow" src="/assets/icons/arrow.png" />
+    </view>
+  </view>
+
+  <!-- 系统与体验设置卡片 -->
+  <view class="card menu-card">
+    <view class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="toggleElderRow" role="switch" aria-checked="{{isElderMode}}">
+      <view class="menu-icon-wrap"><image src="/assets/icons/care.png" /></view>
+      <view class="menu-copy">
+        <view class="menu-label">关爱适老模式</view>
+        <view class="menu-description">{{isElderMode ? '已开启' : '已关闭'}} · 超大字体、温和对比度与易读排版</view>
+      </view>
+      <switch checked="{{isElderMode}}" color="#176b5d" style="pointer-events: none;" />
+    </view>
+
+    <!-- 演示账号 ActionSheet 切换 (仅开发模式显示) -->
+    <view wx:if="{{demoEnabled}}" class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="openRoleSwitchSheet">
+      <view class="menu-icon-wrap"><image src="/assets/icons/settings.png" /></view>
+      <view class="menu-copy">
+        <view class="menu-label">答辩演示 · 切换演示身份</view>
+        <view class="menu-description">创建新用户，演示注册、入驻审核和多角色业务</view>
+      </view>
+      <image class="menu-arrow" src="/assets/icons/arrow.png" />
+    </view>
+
+    <!-- 后端地址 ActionSheet 切换 (仅开发模式显示) -->
+    <view wx:if="{{isDevMode}}" class="menu-item" hover-class="spring-in" hover-stay-time="80" bindtap="changeServerUrl">
+      <view class="menu-icon-wrap"><image src="/assets/icons/network.png" /></view>
+      <view class="menu-copy">
+        <view class="menu-label">服务接口地址</view>
+        <view class="menu-description">{{currentBaseUrl}}</view>
+      </view>
+      <image class="menu-arrow" src="/assets/icons/arrow.png" />
+    </view>
+  </view>
+
+  <!-- 退出登录 (置于页面底部次级独立触控区，热区达到 88rpx) -->
+  <view class="profile-logout-box" wx:if="{{userInfo}}">
+    <button class="btn-secondary btn-logout-bottom" hover-class="spring-in" hover-stay-time="80" bindtap="confirmLogout">退出登录</button>
+  </view>
+
+  <!-- 页脚信息 -->
+  <view class="profile-footer">
+    <view class="profile-footer-name">颐邻 · 社区居家养老服务系统</view>
+    <view>熟悉的邻里，用心的照料。</view>
+  </view>
+
+  <bottom-sheet show="{{logoutSheet}}" title="退出当前账号" content="退出后需要重新登录才能预约服务和查看订单。" confirm-text="退出登录" tone="danger" dismiss-text="再想想" bind:close="closeLogoutSheet" bind:confirm="logout"></bottom-sheet>
+</view>

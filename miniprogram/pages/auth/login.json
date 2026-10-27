@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "bottom-sheet": "/components/bottom-sheet/index"
+  },
+  "navigationBarTitleText": "登录",
+  "navigationBarBackgroundColor": "#fbfaf6",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#263f32",
+  "navigationStyle": "custom"
+}

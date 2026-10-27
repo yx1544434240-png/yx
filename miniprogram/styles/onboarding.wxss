@@ -1,0 +1,23 @@
+.onboarding-title { font-size: var(--font-title); font-weight: 600; line-height: 1.4; }
+.onboarding-heading { font-size: var(--font-section); font-weight: 600; overflow-wrap: anywhere; }
+.onboarding-note { color: var(--text-secondary); font-size: var(--font-meta); line-height: 1.75; margin: 16rpx 0 24rpx; overflow-wrap: anywhere; }
+.onboarding-label { font-size: var(--font-caption); margin: 24rpx 0 12rpx; }
+.onboarding-input { display: block; width: 100%; min-height: var(--control-height); height: var(--control-height); padding: 16rpx 20rpx; border: 1rpx solid var(--border-color); border-radius: 14rpx; background: var(--color-bg-soft); font-size: var(--font-body); }
+textarea.onboarding-input { height: 220rpx; line-height: 1.6; }
+button.onboarding-action { width: 100%; margin-top: 24rpx; white-space: normal; }
+.onboarding-layout > view { min-width: 0; }
+.onboarding-account { display: flex; align-items: center; justify-content: space-between; gap: 24rpx; }
+.onboarding-account > view { min-width: 0; flex: 1; }
+.onboarding-account .onboarding-note { margin-bottom: 0; }
+.onboarding-account button { flex-shrink: 0; }
+.onboarding-reason { color: var(--danger-color); padding: 20rpx; background: #fff2ef; border-radius: 14rpx; font-size: var(--font-caption); overflow-wrap: anywhere; }
+@media (min-width: 600px) {
+  .onboarding-input { padding: 12px 16px; border-radius: 10px; }
+  textarea.onboarding-input { height: 140px; }
+  button.onboarding-action { margin-top: 20px; }
+  .onboarding-note { margin: 12px 0 20px; }
+}
+@media (min-width: 900px) {
+  .container.onboarding-page { max-width: 1080px; }
+  .onboarding-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+}

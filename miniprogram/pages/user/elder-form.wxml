@@ -1,0 +1,67 @@
+<view class="container {{isElderMode ? 'elder-mode' : ''}}">
+  <view class="card form-card">
+    <view class="card-title">{{id ? '修改老人档案' : '老人基本档案登记'}}</view>
+
+    <view class="form-item flex-row">
+      <text class="label">老人姓名</text>
+      <input class="input" placeholder="请输入老人姓名" value="{{name}}" bindinput="onInputName" />
+    </view>
+
+    <view class="form-item flex-row">
+      <text class="label">性别</text>
+      <picker range="{{['男', '女']}}" value="{{gender === 'FEMALE' ? 1 : 0}}" bindchange="onGenderChange">
+        <view class="picker-val">
+          <text>{{gender === 'FEMALE' ? '女' : '男'}}</text>
+          <image class="ui-icon-small" src="/assets/icons/arrow.png" />
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item flex-row">
+      <text class="label">年龄</text>
+      <input class="input" type="number" placeholder="请输入年龄（如78）" value="{{age}}" bindinput="onInputAge" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">照护等级</text>
+      <view class="care-level-chips">
+        <view wx:for="{{careLevelOptions}}" wx:key="value" class="care-level-chip {{careLevel === item.value ? 'is-active' : ''}}" hover-class="spring-in" hover-stay-time="80" bindtap="onCareLevelTap" data-value="{{item.value}}" role="radio" aria-checked="{{careLevel === item.value}}">{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="flex-between label-row">
+        <text class="label">居住地址</text>
+        <view class="map-picker-btn" bindtap="onChooseLocation" hover-class="spring-in">
+          <image class="map-picker-icon" src="/assets/icons/location.png" />
+          <text class="map-text">地图选址</text>
+        </view>
+      </view>
+      <textarea class="form-textarea-addr" auto-height placeholder="社区楼栋门牌号（支持地图选点自动填入）" value="{{address}}" bindinput="onInputAddress" />
+      <view class="coord-badge flex-row" wx:if="{{latitude != null && longitude != null}}">
+        <image class="coord-check-icon" src="/assets/icons/check.png" />
+        <text class="badge-text">已标记精准居住位置</text>
+      </view>
+    </view>
+
+    <view class="form-item flex-row">
+      <text class="label">紧急联系人</text>
+      <input class="input" placeholder="联系人姓名（选填）" value="{{emergencyContact}}" bindinput="onInputContact" />
+    </view>
+
+    <view class="form-item flex-row">
+      <text class="label">联系电话</text>
+      <input class="input" type="number" placeholder="联系人电话（选填）" value="{{emergencyPhone}}" bindinput="onInputPhone" />
+    </view>
+
+    <view class="form-item flex-row">
+      <text class="label">照护与健康需求</text>
+      <input class="input" placeholder="如高血压、行动不便、需助餐等" value="{{healthNote}}" bindinput="onInputHealth" />
+    </view>
+
+    <button class="btn-primary btn-save {{isElderMode ? 'btn-large' : ''}}" loading="{{submitting}}" disabled="{{submitting}}" bindtap="saveElder">
+      <text wx:if="{{submitting}}">正在保存…</text>
+      <text wx:else>保存长辈档案</text>
+    </button>
+  </view>
+</view>

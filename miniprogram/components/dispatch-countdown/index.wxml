@@ -1,0 +1,1 @@
+<text class="countdown">请在 {{seconds}} 秒内响应</text>

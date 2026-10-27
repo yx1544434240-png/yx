@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 64" fill="none">
+  <defs>
+    <linearGradient id="mainVineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#176b5d" stop-opacity="0.12" />
+      <stop offset="20%" stop-color="#176b5d" stop-opacity="0.85" />
+      <stop offset="50%" stop-color="#176b5d" stop-opacity="0.95" />
+      <stop offset="80%" stop-color="#176b5d" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#176b5d" stop-opacity="0.12" />
+    </linearGradient>
+    <linearGradient id="subVineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#237d6c" stop-opacity="0.08" />
+      <stop offset="30%" stop-color="#237d6c" stop-opacity="0.55" />
+      <stop offset="50%" stop-color="#237d6c" stop-opacity="0.65" />
+      <stop offset="70%" stop-color="#237d6c" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#237d6c" stop-opacity="0.08" />
+    </linearGradient>
+  </defs>
+
+  <!-- 主藤蔓与伴生流线 (Graceful S-Curving Vines) -->
+  <path d="M 14 32 C 55 20, 85 42, 110 32 C 135 22, 165 44, 206 32" stroke="url(#mainVineGrad)" stroke-width="2.1" stroke-linecap="round" />
+  <path d="M 36 32 C 72 44, 100 20, 110 32 C 120 44, 148 20, 184 32" stroke="url(#subVineGrad)" stroke-width="1.3" stroke-linecap="round" />
+
+  <!-- 中心主花瓣群 (Center 5-Petal Camellia/Jasmine Blossom at 110, 32) -->
+  <g transform="translate(110, 32)">
+    <circle cx="0" cy="-5.8" r="3.8" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.1" />
+    <circle cx="5.5" cy="-1.8" r="3.8" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.1" />
+    <circle cx="3.4" cy="4.7" r="3.8" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.1" />
+    <circle cx="-3.4" cy="4.7" r="3.8" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.1" />
+    <circle cx="-5.5" cy="-1.8" r="3.8" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.1" />
+    <!-- 暖橘花蕊 (Matching Brand Orange Dot) -->
+    <circle cx="0" cy="0" r="3.0" fill="#d97736" />
+    <circle cx="0" cy="0" r="4.6" stroke="#d97736" stroke-width="0.8" stroke-opacity="0.45" />
+  </g>
+
+  <!-- 中心上下主叶片 (Center Vertical Leaves) -->
+  <path d="M 110 24 C 104 16, 108 9, 110 9 C 112 9, 116 16, 110 24 Z" fill="#176b5d" fill-opacity="0.28" stroke="#176b5d" stroke-width="1.2" stroke-linejoin="round" />
+  <line x1="110" y1="24" x2="110" y2="10" stroke="#176b5d" stroke-width="0.8" />
+  <path d="M 110 40 C 104 48, 108 55, 110 55 C 112 55, 116 48, 110 40 Z" fill="#176b5d" fill-opacity="0.28" stroke="#176b5d" stroke-width="1.2" stroke-linejoin="round" />
+  <line x1="110" y1="40" x2="110" y2="54" stroke="#176b5d" stroke-width="0.8" />
+
+  <!-- 左侧花叶族群 (Left Wing Botanicals) -->
+  <!-- 左紧邻叶对 -->
+  <path d="M 96 34 C 86 31, 83 23, 86 21 C 89 21, 95 28, 96 34 Z" fill="#176b5d" fill-opacity="0.25" stroke="#176b5d" stroke-width="1.1" />
+  <path d="M 98 38 C 91 43, 88 49, 90 51 C 92 51, 98 44, 98 38 Z" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+  <!-- 左侧小花 (at 74, 38) -->
+  <g transform="translate(74, 38)">
+    <circle cx="0" cy="-3.6" r="2.7" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+    <circle cx="3.6" cy="0" r="2.7" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+    <circle cx="0" cy="3.6" r="2.7" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+    <circle cx="-3.6" cy="0" r="2.7" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+    <circle cx="0" cy="0" r="2.0" fill="#d97736" />
+  </g>
+  <!-- 左外侧叶簇 -->
+  <path d="M 55 23 C 45 20, 42 12, 45 10 C 48 10, 54 17, 55 23 Z" fill="#176b5d" fill-opacity="0.25" stroke="#176b5d" stroke-width="1.1" />
+  <path d="M 50 21 C 49 14, 55 10, 57 11 C 58 13, 53 19, 50 21 Z" fill="#176b5d" fill-opacity="0.20" stroke="#176b5d" stroke-width="0.9" />
+  <!-- 左嫩梢微叶 -->
+  <path d="M 34 33 C 24 33, 21 28, 23 27 C 26 27, 31 31, 34 33 Z" fill="#176b5d" fill-opacity="0.20" stroke="#176b5d" stroke-width="0.9" />
+
+  <!-- 右侧花叶族群 (Right Wing Botanicals) -->
+  <!-- 右紧邻叶对 -->
+  <path d="M 124 30 C 134 27, 137 19, 134 17 C 131 17, 125 24, 124 30 Z" fill="#176b5d" fill-opacity="0.25" stroke="#176b5d" stroke-width="1.1" />
+  <path d="M 122 26 C 129 21, 132 15, 130 13 C 128 13, 122 20, 122 26 Z" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+  <!-- 右侧小花 (at 146, 26) -->
+  <g transform="translate(146, 26)">
+    <circle cx="0" cy="-3.6" r="2.7" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+    <circle cx="3.6" cy="0" r="2.7" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+    <circle cx="0" cy="3.6" r="2.7" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+    <circle cx="-3.6" cy="0" r="2.7" fill="#176b5d" fill-opacity="0.22" stroke="#176b5d" stroke-width="1.0" />
+    <circle cx="0" cy="0" r="2.0" fill="#d97736" />
+  </g>
+  <!-- 右外侧叶簇 -->
+  <path d="M 165 41 C 175 44, 178 52, 175 54 C 172 54, 166 47, 165 41 Z" fill="#176b5d" fill-opacity="0.25" stroke="#176b5d" stroke-width="1.1" />
+  <path d="M 170 43 C 171 50, 165 54, 163 53 C 162 51, 167 45, 170 43 Z" fill="#176b5d" fill-opacity="0.20" stroke="#176b5d" stroke-width="0.9" />
+  <!-- 右嫩梢微叶 -->
+  <path d="M 186 31 C 196 31, 199 36, 197 37 C 194 37, 189 33, 186 31 Z" fill="#176b5d" fill-opacity="0.20" stroke="#176b5d" stroke-width="0.9" />
+
+  <!-- 晶莹晨露微点 (Dewdrops) -->
+  <circle cx="22" cy="32" r="2.0" fill="#176b5d" fill-opacity="0.55" />
+  <circle cx="198" cy="32" r="2.0" fill="#176b5d" fill-opacity="0.55" />
+  <circle cx="82" cy="18" r="1.8" fill="#d97736" fill-opacity="0.75" />
+  <circle cx="138" cy="46" r="1.8" fill="#d97736" fill-opacity="0.75" />
+  <circle cx="66" cy="48" r="1.5" fill="#176b5d" fill-opacity="0.45" />
+  <circle cx="154" cy="16" r="1.5" fill="#176b5d" fill-opacity="0.45" />
+</svg>

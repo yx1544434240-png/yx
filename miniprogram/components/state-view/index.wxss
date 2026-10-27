@@ -1,0 +1,120 @@
+.state-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 56rpx 32rpx;
+  gap: 12rpx;
+}
+.state-view-icon {
+  width: 96rpx;
+  height: 96rpx;
+  opacity: .75;
+  margin-bottom: 12rpx;
+}
+.state-view-title {
+  font-size: var(--font-body);
+  color: var(--text-main);
+  font-weight: 550;
+  line-height: 1.6;
+}
+.state-view-desc {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 520rpx;
+}
+.state-view-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  min-width: 240rpx;
+  max-width: 360rpx;
+  min-height: 88rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0 44rpx;
+  margin-top: 20rpx;
+  font-size: var(--font-body);
+  font-weight: 550;
+  border-radius: 44rpx;
+  box-sizing: border-box;
+  white-space: nowrap;
+  transition: transform 240ms cubic-bezier(.25, 1.4, .5, 1), background-color 120ms ease, box-shadow 120ms ease;
+}
+.state-view-action:active,
+.state-view-action.spring-in {
+  transform: scale(.96);
+  transition-duration: 90ms;
+}
+.state-view-error .state-view-title {
+  color: var(--warning-color);
+}
+.state-view-action.retry-button {
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+  border: 1.5rpx solid rgba(23, 107, 93, 0.18);
+  box-shadow: none;
+}
+
+/* 平板与大屏响应式适配：严格限制尺寸膨胀，打造精致胶囊按钮 */
+@media (min-width: 600px) {
+  .state-view {
+    padding: 48px 24px;
+    gap: 10px;
+  }
+  .state-view-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 8px;
+    opacity: .8;
+  }
+  .state-view-title {
+    font-size: 17px;
+    line-height: 1.5;
+  }
+  .state-view-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 400px;
+  }
+  .state-view-action,
+  button.state-view-action {
+    width: auto !important;
+    min-width: 140px;
+    max-width: 220px;
+    min-height: 44px;
+    height: 44px;
+    line-height: 44px;
+    padding: 0 28px;
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 22px;
+    box-shadow: 0 4px 14px rgba(23, 107, 93, 0.16);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .elder-mode .state-view-action,
+  .elder-mode button.state-view-action {
+    min-height: 50px;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 32px;
+    font-size: 18px;
+    border-radius: 25px;
+    max-width: 260px;
+  }
+  .elder-mode .state-view-icon {
+    width: 72px;
+    height: 72px;
+  }
+  .elder-mode .state-view-title {
+    font-size: 20px;
+  }
+  .elder-mode .state-view-desc {
+    font-size: 16px;
+  }
+}

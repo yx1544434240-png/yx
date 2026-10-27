@@ -1,0 +1,248 @@
+.sheet-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(24, 38, 32, 0.46);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transition: opacity 240ms ease;
+}
+
+.sheet-panel {
+  width: 100%;
+  max-width: 750rpx;
+  background: var(--color-surface, #ffffff);
+  border-radius: 36rpx 36rpx 0 0;
+  padding: 16rpx 36rpx calc(36rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 -10rpx 40rpx rgba(18, 38, 28, 0.12);
+  transition: transform 280ms cubic-bezier(.34, 1.28, .4, 1);
+}
+
+.sheet-panel.is-dragging {
+  transition: none;
+}
+
+.sheet-handle {
+  width: 72rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: var(--sheet-handle-color, #dbe4da);
+  margin: 8rpx auto 24rpx;
+}
+
+/* 状态徽标 (例如退出登录 / 危险警示) */
+.sheet-badge {
+  width: 84rpx;
+  height: 84rpx;
+  border-radius: 50%;
+  margin: 8rpx auto 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sheet-badge.badge-danger {
+  background: var(--danger-soft, #fdf1f0);
+  border: 2rpx solid var(--danger-line, #fad2cf);
+  box-shadow: 0 4rpx 16rpx rgba(216, 69, 61, 0.12);
+}
+
+.sheet-badge.badge-danger .badge-symbol {
+  font-size: var(--font-sheet-symbol, 40rpx);
+  font-weight: 700;
+  color: var(--danger-strong, #c4403a);
+  line-height: 1;
+}
+
+.sheet-badge.badge-success {
+  background: var(--success-soft, #edf7f1);
+  border: 2rpx solid var(--success-line, #cbe9d6);
+}
+
+.sheet-badge.badge-success .badge-symbol {
+  font-size: var(--font-sheet-symbol, 38rpx);
+  font-weight: 700;
+  color: var(--success-strong, #1b7a54);
+  line-height: 1;
+}
+
+.sheet-badge.badge-primary {
+  background: var(--primary-soft-2, #edf5f2);
+  border: 2rpx solid var(--primary-line, #d0e7dc);
+}
+
+.sheet-title {
+  font-size: var(--font-section, 36rpx);
+  font-weight: 650;
+  color: var(--text-main, #24342e);
+  text-align: center;
+  line-height: 1.35;
+}
+
+.sheet-body {
+  margin-top: 14rpx;
+  margin-bottom: 8rpx;
+  color: var(--text-secondary, #56635c);
+  font-size: var(--font-meta, 28rpx);
+  line-height: 1.6;
+  text-align: center;
+  padding: 0 12rpx;
+}
+
+/* 底部操作按钮组：并排双胶囊 */
+.sheet-actions {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 36rpx;
+  width: 100%;
+}
+
+.sheet-btn {
+  flex: 1;
+  min-width: 0;
+  height: var(--sheet-btn-height, 92rpx);
+  min-height: var(--sheet-btn-height, 92rpx);
+  line-height: normal;
+  padding: 0 24rpx;
+  border-radius: 46rpx;
+  font-size: var(--font-caption, 30rpx);
+  font-weight: 550;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
+  white-space: nowrap;
+  border: 0;
+  margin: 0;
+  transition: transform 180ms cubic-bezier(.25, 1.4, .5, 1), background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.sheet-btn::after {
+  border: none;
+}
+
+/* 取消按钮 */
+.sheet-btn-cancel,
+.sheet-dismiss {
+  background: var(--neutral-soft, #edf2ed);
+  color: var(--neutral-text, #4a5c50);
+  border: 1rpx solid var(--neutral-line, #dce5dc);
+}
+
+.sheet-btn-cancel:active,
+.sheet-btn-cancel.spring-in,
+.sheet-dismiss:active,
+.sheet-dismiss.spring-in {
+  background: var(--neutral-pressed, #dfe7df);
+  transform: scale(.975);
+}
+
+/* 确认按钮 */
+.sheet-btn-confirm,
+.sheet-confirm {
+  background: var(--primary-color, #176b5d);
+  color: var(--color-surface, #ffffff);
+  box-shadow: 0 6rpx 18rpx rgba(23, 107, 93, 0.2);
+}
+
+.sheet-btn-confirm:active,
+.sheet-btn-confirm.spring-in,
+.sheet-confirm:active,
+.sheet-confirm.spring-in {
+  background: var(--primary-dark, #105246);
+  transform: scale(.975);
+  box-shadow: 0 2rpx 8rpx rgba(23, 107, 93, 0.12);
+}
+
+/* 危险操作确认按钮 (如退出登录、取消订单、拒绝接单) */
+.sheet-btn-confirm.is-danger,
+.sheet-confirm.is-danger {
+  background: linear-gradient(135deg, var(--danger-grad-start, #d9453d) 0%, var(--danger-grad-end, #be352e) 100%);
+  color: var(--color-surface, #ffffff);
+  box-shadow: 0 6rpx 18rpx rgba(217, 69, 61, 0.28);
+}
+
+.sheet-btn-confirm.is-danger:active,
+.sheet-btn-confirm.is-danger.spring-in,
+.sheet-confirm.is-danger:active,
+.sheet-confirm.is-danger.spring-in {
+  background: var(--danger-pressed, #a82e28);
+  transform: scale(.975);
+  box-shadow: 0 2rpx 8rpx rgba(217, 69, 61, 0.14);
+}
+
+.sheet-btn-confirm.is-success,
+.sheet-confirm.is-success {
+  background: var(--success-color, #1f8a5b) !important;
+  color: var(--color-surface, #ffffff) !important;
+  box-shadow: 0 6rpx 18rpx rgba(31, 138, 91, 0.2);
+}
+
+/* 平板模式：从底部抽屉变为屏幕正中央典雅浮层卡片弹窗 */
+@media (min-width: 600px) {
+  .sheet-mask {
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .sheet-panel {
+    max-width: 440px;
+    width: 90%;
+    padding: 32px 28px 28px;
+    border-radius: 24px;
+    box-shadow: 0 24px 64px rgba(24, 40, 32, 0.24);
+  }
+  .sheet-handle {
+    display: none;
+  }
+  .sheet-badge {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+  .sheet-title {
+    font-size: 20px;
+  }
+  .sheet-body {
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 24px;
+  }
+  .sheet-actions {
+    margin-top: 24px;
+    gap: 16px;
+  }
+  .sheet-btn {
+    height: 48px;
+    min-height: 48px;
+    line-height: normal;
+    font-size: 16px;
+    border-radius: 24px;
+  }
+  /* 平板 + 大字模式：沿用平板布局，字号与按钮高度跟随大字 token */
+  .elder-mode .sheet-title { font-size: var(--font-section); }
+  .elder-mode .sheet-body { font-size: var(--font-meta); }
+  .elder-mode .sheet-btn { font-size: var(--font-caption); height: var(--control-height); min-height: var(--control-height); }
+  .sheet-scroll { max-height: 50vh; }
+}
+
+/* 可滚动抽屉：把手/标题区拖动，内容区滚动 */
+.sheet-panel.is-scrollable {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sheet-drag-area { flex-shrink: 0; }
+.sheet-scroll {
+  max-height: 60vh;
+  margin-top: 12rpx;
+}
+
+/* 大字模式：按钮跟随大字控件高度 */
+.elder-mode .sheet-btn { height: var(--control-height); min-height: var(--control-height); }

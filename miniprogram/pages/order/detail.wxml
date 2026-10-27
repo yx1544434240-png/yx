@@ -1,0 +1,231 @@
+<view class="container page-state {{isElderMode ? 'elder-mode' : ''}}" wx:if="{{!orderVO}}">
+  <view wx:if="{{loading}}" aria-label="正在加载订单详情">
+    <view class="skeleton-block skeleton-banner order-skeleton-banner"></view>
+    <view class="card info-card">
+      <view class="skeleton-block skeleton-section order-skeleton-title"></view>
+      <view class="info-item flex-between" wx:for="{{[1,2,3,4,5,6,7,8]}}" wx:key="*this">
+        <view class="skeleton-block skeleton-label"></view>
+        <view class="skeleton-block skeleton-value"></view>
+      </view>
+    </view>
+    <view class="page-state-tip">正在加载订单详情…</view>
+  </view>
+  <view class="card" wx:elif="{{missingId}}"><state-view type="empty" title="没有找到这笔订单" description="链接可能不完整，请回到首页查看" action-text="回到首页" bindaction="goHome" /></view>
+  <view class="card" wx:elif="{{loadError}}"><state-view type="error" title="订单信息暂时未能加载" description="请检查网络后重试" bindaction="retryDetail" /></view>
+</view>
+<view class="container scroll-content-with-bottom {{isElderMode ? 'elder-mode' : ''}}" wx:if="{{orderVO}}">
+  <view class="detail-refresh-tip" wx:if="{{loadError}}">订单更新失败<button class="retry-button" bindtap="retryDetail">重新加载</button></view>
+  <!-- 状态条幅 -->
+  <view class="status-banner bg-{{orderVO.order.status}}">
+    <view class="status-title">{{statusTextMap[orderVO.order.status] || orderVO.order.status}}</view>
+    <!-- 状态与“接下来怎么办”合并为一张卡，避免两段相似说明 -->
+    <view class="next-step-body">
+      <view class="next-step-text" wx:if="{{orderVO.order.status === 'WAIT_DISPATCH' || orderVO.order.status === 'WAIT_MANUAL'}}">
+        正在安排具备专业资质的社区服务人员。系统根据资质、评分和距离就近智能调度，稍候将为您派发，请保持手机畅通。
+      </view>
+      <view class="next-step-text" wx:elif="{{orderVO.order.status === 'WAIT_ACCEPT'}}">
+        系统已向合适的服务人员派发任务，人员正在确认接单，请耐心等候。
+      </view>
+      <view class="next-step-text" wx:elif="{{orderVO.order.status === 'WAIT_VISIT'}}">
+        服务人员已接单，预计上门时间：{{orderVO.order.plannedStartText}}。请于预约时间在家等候，如有疑问可点击下方“联系服务人员”。
+      </view>
+      <view class="next-step-text" wx:elif="{{orderVO.order.status === 'IN_SERVICE'}}">
+        服务人员已到达服务现场，正在提供居家照护服务。服务结束后将录入工作总结，随后请您核对确认。
+      </view>
+      <view class="next-step-text" wx:elif="{{orderVO.order.status === 'WAIT_CONFIRM'}}">
+        现场服务已完成！请查看下方“现场服务履约记录”，核对服务时间与总结无误后，点击底部“确认完成”。
+      </view>
+      <view class="next-step-text" wx:elif="{{orderVO.order.status === 'COMPLETED' && !orderVO.serviceReview}}">
+        本次居家照护已圆满完成！欢迎点击底部“评价服务”，为服务人员的专业态度与质量打分。
+      </view>
+      <view class="next-step-text" wx:elif="{{orderVO.order.status === 'COMPLETED' && orderVO.serviceReview}}">
+        感谢您的反馈！评价已记录，颐邻社区将持续优化居家养老服务质量。
+      </view>
+      <view class="next-step-text" wx:elif="{{orderVO.order.status === 'CANCELLED'}}">
+        该预约订单已取消。若您仍有助老需要，随时可在首页或服务列表重新发起预约。
+      </view>
+      <view class="next-step-text" wx:else>{{statusSubMap[orderVO.order.status] || ''}}</view>
+    </view>
+  </view>
+
+  <!-- 派单师傅信息卡片 (已接单后展示) -->
+  <view class="card staff-card flex-between" wx:if="{{orderVO.currentStaff}}">
+    <view class="flex-row">
+      <view class="staff-avatar"><image src="/assets/icons/staff.png" /></view>
+      <view>
+        <view class="staff-name">{{orderVO.currentStaff.user.realName}} <text class="tag tag-success">社区服务人员</text></view>
+        <view class="staff-sub">服务评分：{{orderVO.currentStaff.profile && orderVO.currentStaff.profile.priorRating != null ? orderVO.currentStaff.profile.priorRating + '分' : '暂无评分'}} | 累计完成：{{orderVO.currentStaff.profile && orderVO.currentStaff.profile.totalOrders != null ? orderVO.currentStaff.profile.totalOrders : 0}}单</view>
+      </view>
+    </view>
+    <button class="btn-dial" bindtap="callStaff">联系服务人员</button>
+  </view>
+
+  <!-- 地图与实时轨迹卡片 (待上门/服务中 展示) -->
+  <view class="card map-tracking-card" wx:if="{{hasTrackingLocation && tracking && (orderVO.order.status === 'WAIT_VISIT' || orderVO.order.status === 'IN_SERVICE')}}">
+    <view class="map-header flex-between">
+      <view class="map-status-badge flex-row">
+        <view class="pulse-dot {{tracking.isStale ? 'dot-stale' : ''}}"></view>
+        <text class="map-status-text {{tracking.isStale ? 'status-text-stale' : ''}}">{{orderVO.order.status === 'IN_SERVICE' ? '服务人员已到达服务现场' : (tracking.isStale ? tracking.locationStatusText : '服务人员正在赶往老人住址')}}</text>
+      </view>
+      <view class="map-eta" wx:if="{{trackingDistanceText}}">
+        <text class="eta-dist">{{trackingDistanceText}}</text>
+        <text class="eta-time" wx:if="{{orderVO.order.status === 'WAIT_VISIT'}}"> · 预估约{{tracking.estimatedMinutes}}分钟{{tracking.isStale ? '(参考)' : ''}}</text>
+      </view>
+    </view>
+    <view class="stale-tip-bar flex-row" wx:if="{{tracking.isStale && orderVO.order.status === 'WAIT_VISIT'}}">
+      <image class="stale-tip-img ui-icon-small" src="/assets/icons/time.png" />
+      <text class="stale-tip-text">{{tracking.locationStatusText}}，预估到达时间基于历史位置测算</text>
+    </view>
+
+    <map
+      id="orderMap"
+      class="order-map"
+      latitude="{{mapCenter.latitude}}"
+      longitude="{{mapCenter.longitude}}"
+      scale="{{mapScale}}"
+      markers="{{markers}}"
+      polyline="{{polyline}}"
+      show-location="{{false}}"
+    ></map>
+
+    <view class="map-actions-bar flex-between">
+      <view class="map-address-info flex-row" bindtap="openNavigation">
+        <image class="loc-pin-icon ui-icon-small" src="/assets/icons/location.png" />
+        <text class="address-text">{{tracking.destAddress || orderVO.order.addressSnapshot}}</text>
+      </view>
+      <view class="map-btns flex-row">
+        <button class="btn-map-action" bindtap="openNavigation">查看导航</button>
+        <button class="btn-map-action btn-refresh" bindtap="fetchTracking">刷新位置</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 预约与上门信息 -->
+  <view class="card info-card">
+    <view class="card-title">预约与上门信息</view>
+    <view class="info-item flex-between">
+      <text class="label">预约类型</text>
+      <view class="flex-row items-center">
+        <text class="tag tag-sm {{orderVO.order.requesterType === 'FAMILY' ? 'tag-info' : 'tag-success'}}">{{orderVO.requesterTypeDesc || (orderVO.order.requesterType === 'FAMILY' ? '家属代约' : '老人自约')}}</text>
+        <text class="value" wx:if="{{orderVO.order.requesterType === 'FAMILY' && orderVO.requesterName}}" style="margin-left: 12rpx; font-size: var(--font-meta); color: var(--text-secondary);">(代约人: {{orderVO.requesterName}})</text>
+      </view>
+    </view>
+    <view class="info-item flex-between">
+      <text class="label">服务项目</text>
+      <text class="value bold">{{orderVO.order.serviceNameSnapshot}}</text>
+    </view>
+    <view class="info-item flex-between">
+      <text class="label">预约开始</text>
+      <text class="value">{{orderVO.order.plannedStartText}}</text>
+    </view>
+    <view class="info-item flex-between">
+      <text class="label">预计时长</text>
+      <text class="value">{{orderVO.order.durationMinutesSnapshot}} 分钟</text>
+    </view>
+    <view class="info-item flex-between">
+      <text class="label">服务对象</text>
+      <text class="value">{{orderVO.elder ? orderVO.elder.name : '老人'}}</text>
+    </view>
+    <view class="info-item flex-between is-multiline">
+      <text class="label">服务地址</text>
+      <text class="value">{{orderVO.order.addressSnapshot}}</text>
+    </view>
+    <view class="info-item flex-between is-multiline">
+      <text class="label">联系人</text>
+      <text class="value">{{orderVO.order.contactNameSnapshot}} ({{orderVO.order.contactPhoneSnapshot}})</text>
+    </view>
+    <view class="info-item flex-between is-multiline" wx:if="{{orderVO.order.remark}}">
+      <text class="label">备注说明</text>
+      <text class="value">{{orderVO.order.remark}}</text>
+    </view>
+  </view>
+
+  <!-- 费用与订单凭据 -->
+  <view class="card info-card">
+    <view class="card-title">费用与订单凭据</view>
+    <view class="info-item flex-between">
+      <text class="label">预计费用</text>
+      <text class="value price">¥{{orderVO.order.priceSnapshot}}</text>
+    </view>
+    <view class="info-item flex-between">
+      <text class="label">支付状态</text>
+      <text class="value {{orderVO.paid ? 'paid-text' : ''}}">{{orderVO.paid ? '已支付' + (orderVO.payerName ? '（' + orderVO.payerName + '）' : '') : '待支付'}}</text>
+    </view>
+    <view class="info-item is-multiline"><text class="label">费用说明</text><text class="value">{{orderVO.settlementNote || '老人本人或已绑定的家属均可支付，每笔订单只需支付一次'}}</text></view>
+    <view class="info-item flex-between">
+      <text class="label">订单编号</text>
+      <text class="value code">{{orderVO.order.orderNo}}</text>
+    </view>
+    <view class="info-item flex-between order-feedback-item" bindtap="goToOrderFeedback">
+      <text class="label">服务监督</text>
+      <view class="flex-row items-center feedback-action-link">
+        <text class="feedback-link-text">投诉与建议</text>
+        <image class="menu-arrow" src="/assets/icons/arrow.png" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 履约上门记录 (服务人员提交后展示) -->
+  <view class="card record-card" wx:if="{{orderVO.serviceRecord && orderVO.serviceRecord.actualEndAt}}">
+    <view class="card-title">现场服务履约记录</view>
+    <view class="record-line">实际服务时间：{{orderVO.serviceRecord.actualRangeText}}</view>
+    <view class="record-summary">工作总结：{{orderVO.serviceRecord.serviceSummary}}</view>
+
+    <view wx:if="{{unavailablePhotos}}" class="record-photos-label">{{unavailablePhotos}}张凭证暂时无法加载，请稍后重试</view>
+    <!-- 服务人员现场拍摄照片凭证 -->
+    <view class="record-photos-wrap" wx:if="{{fulfillmentPhotos && fulfillmentPhotos.length > 0}}">
+      <view class="record-photos-label">服务人员拍摄凭证 (共{{fulfillmentPhotos.length}}张)：</view>
+      <view class="record-photos-grid">
+        <view class="record-photo-item" wx:for="{{fulfillmentPhotos}}" wx:key="*this" bindtap="previewFulfillmentPhoto" data-url="{{item}}">
+          <image class="record-photo-img" src="{{item}}" mode="aspectFill" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 服务评价展示 (评价后展示) -->
+  <view class="card review-card" wx:if="{{orderVO.serviceReview}}">
+    <view class="card-title flex-between">
+      <text>服务评价反馈</text>
+      <text class="rating-stars">{{orderVO.serviceReview.rating}} / 5 分</text>
+    </view>
+    <view class="review-content">{{orderVO.serviceReview.content || '客户未填写文字评价'}}</view>
+    <view class="feedback-tag-list"><text class="tag tag-neutral" wx:for="{{orderVO.serviceReview.tagList}}" wx:key="*this">{{item}}</text></view>
+  </view>
+
+  <view class="card feedback-record" wx:for="{{orderVO.feedbackRecords}}" wx:key="id">
+    <view class="card-title flex-between"><text>我的反馈跟进</text><text class="tag {{item.status === 'RESOLVED' ? 'tag-success' : 'tag-warning'}}">{{item.statusText}}</text></view>
+    <view class="review-content">{{item.complaintTitle}}</view>
+    <view class="record-line">提交时间：{{item.createdAtText}}</view>
+    <view class="record-summary" wx:if="{{item.handleResult}}">社区答复：{{item.handleResult}}</view>
+    <view class="record-line" wx:if="{{item.handledAtText}}">答复时间：{{item.handledAtText}}</view>
+    <view class="record-line" wx:if="{{item.status === 'PENDING'}}">社区尚未受理，请稍后查看。</view>
+    <view class="record-line" wx:if="{{item.status === 'PROCESSING'}}">社区已受理，正在核实并协调处理。</view>
+  </view>
+
+  <!-- 订单流转时间线 -->
+  <view class="card timeline-card">
+    <view class="card-title">状态流转记录</view>
+    <view class="timeline">
+      <view class="timeline-node" wx:for="{{orderVO.logs}}" wx:key="id">
+        <view class="timeline-line" style="animation-delay: {{index < 3 ? 280 + index * 50 : 420}}ms"></view>
+        <view class="dot" style="animation-delay: {{index < 3 ? 280 + index * 50 : 420}}ms"></view>
+        <view class="node-content" style="animation-delay: {{index < 3 ? 280 + index * 50 : 420}}ms">
+          <view class="node-time">{{item.createdAtText}}</view>
+          <view class="node-text">{{statusTextMap[item.toStatus] || item.toStatus}}：{{item.reason}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作按钮栏 -->
+  <view class="bottom-actions flex-row" wx:if="{{canCancel || orderVO.canPay || orderVO.order.status === 'WAIT_CONFIRM' || (orderVO.order.status === 'COMPLETED' && !orderVO.serviceReview)}}">
+    <button class="btn-cancel spring {{orderVO.canPay || orderVO.order.status === 'WAIT_CONFIRM' || orderVO.order.status === 'COMPLETED' ? '' : 'is-solo'}}" hover-class="spring-in" hover-stay-time="80" wx:if="{{canCancel}}" bindtap="cancelOrder">取消订单</button>
+    <button class="btn-primary btn-pay {{isElderMode ? 'btn-large' : ''}}" hover-class="spring-in" hover-stay-time="80" wx:if="{{orderVO.canPay}}" bindtap="openPaySheet" disabled="{{paying}}">支付 ¥{{orderVO.order.priceSnapshot}}</button>
+    <button class="btn-primary btn-confirm {{isElderMode ? 'btn-large' : ''}}" hover-class="spring-in" hover-stay-time="80" wx:if="{{orderVO.order.status === 'WAIT_CONFIRM'}}" bindtap="confirmOrder">确认完成</button>
+    <button class="btn-primary btn-review {{isElderMode ? 'btn-large' : ''}}" hover-class="spring-in" hover-stay-time="80" wx:if="{{orderVO.order.status === 'COMPLETED' && !orderVO.serviceReview}}" bindtap="goToReview">评价服务</button>
+  </view>
+  <bottom-sheet show="{{cancelSheet}}" title="取消预约订单" content="服务尚未开始，确定要取消这笔订单吗？" confirm-text="确认取消" tone="danger" dismiss-text="再想想" bind:close="closeCancelSheet" bind:confirm="submitCancel"></bottom-sheet>
+  <bottom-sheet show="{{paySheet}}" title="确认支付" content="将支付 ¥{{orderVO.order.priceSnapshot}}。老人本人或已绑定的家属任一人支付即可，每笔订单只需支付一次。" confirm-text="确认支付" dismiss-text="再想想" loading="{{paying}}" bind:close="closePaySheet" bind:confirm="submitPay"></bottom-sheet>
+  <bottom-sheet show="{{confirmSheet}}" title="确认服务完成" content="确认服务人员已按标准完成上门服务内容吗？" confirm-text="确认完成" dismiss-text="再想想" bind:close="closeConfirmSheet" bind:confirm="submitConfirm"></bottom-sheet>
+</view>

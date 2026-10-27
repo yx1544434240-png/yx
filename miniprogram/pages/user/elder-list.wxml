@@ -1,0 +1,68 @@
+<view class="container elder-list-page scroll-content-with-bottom {{isElderMode ? 'elder-mode' : ''}}">
+  <view class="page-header">
+    <view class="page-title">长辈档案列表</view>
+    <view class="page-desc">登记长辈基本信息与住址，预约时可一键带入</view>
+  </view>
+
+  <!-- 骨架屏加载 -->
+  <view wx:if="{{loading && !elders.length}}">
+    <view class="card skeleton-card" wx:for="{{[1, 2]}}" wx:key="*this">
+      <view class="skeleton-block skeleton-title"></view>
+      <view class="skeleton-block skeleton-body"></view>
+      <view class="skeleton-block skeleton-short"></view>
+    </view>
+  </view>
+
+  <!-- 错误提示 -->
+  <view class="card" wx:elif="{{loadError}}"><state-view type="error" title="老人档案暂时未能加载" description="请检查网络后重试" bindaction="loadElders" /></view>
+
+  <!-- 空状态 -->
+  <view class="card empty-state-card" wx:elif="{{!elders.length}}">
+    <image class="empty-icon" src="/assets/icons/user.png" />
+    <view class="empty-title">暂未登记长辈档案</view>
+    <view class="empty-sub">登记父母长辈健康状况与居住地址，随时享受便捷居家养老照护</view>
+    <button class="btn-primary btn-add-empty {{isElderMode ? 'btn-large' : ''}}" bindtap="goToCreate">+ 立即登记长辈档案</button>
+  </view>
+
+  <!-- 档案列表 -->
+  <view class="elder-cards-list" wx:else>
+    <view class="card elder-card spring" hover-class="spring-in" hover-stay-time="80" wx:for="{{elders}}" wx:key="id">
+      <view class="card-top flex-between">
+        <view class="elder-identity flex-row">
+          <text class="elder-name">{{item.name}}</text>
+          <text class="tag tag-sm {{item.isSelf ? 'tag-success' : 'tag-info'}}" style="margin-right: 12rpx;">{{item.relationDesc || (item.isSelf ? '本人' : '家属代约')}}</text>
+          <text class="tag tag-info gender-tag">{{item.gender === 'FEMALE' ? '女' : '男'}}</text>
+          <text class="elder-age" wx:if="{{item.age}}">{{item.age}}岁</text>
+        </view>
+        <text wx:if="{{careLevelMap[item.careLevel]}}" class="tag tag-success care-tag">{{careLevelMap[item.careLevel]}}</text>
+      </view>
+
+      <view class="elder-detail-item flex-row">
+        <image class="ui-icon-small" src="/assets/icons/location.png" />
+        <text class="detail-text">{{item.community ? (item.community + ' · ') : ''}}{{item.address}}</text>
+      </view>
+
+      <view class="elder-detail-item flex-row" wx:if="{{item.emergencyContact || item.emergencyPhone}}">
+        <image class="ui-icon-small" src="/assets/icons/phone.png" />
+        <text class="detail-text">紧急联系人：{{item.emergencyContact || '未填'}} ({{item.emergencyPhone || '未留电话'}})</text>
+      </view>
+
+      <view class="elder-detail-item flex-row" wx:if="{{item.healthNote}}">
+        <image class="ui-icon-small" src="/assets/icons/care.png" />
+        <text class="detail-text note-text">健康状况：{{item.healthNote}}</text>
+      </view>
+
+      <view class="card-actions flex-between">
+        <text class="community-name">{{item.community || '阳光花园社区'}}</text>
+        <button class="btn-secondary btn-edit-card" bindtap="goToEdit" data-id="{{item.id}}">编辑档案</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部固定新增按钮 -->
+  <view class="bottom-action-box" wx:if="{{elders.length > 0}}">
+    <button class="btn-primary btn-add-bottom {{isElderMode ? 'btn-large' : ''}}" hover-class="spring-in" hover-stay-time="80" bindtap="goToCreate">
+      + 登记新长辈档案
+    </button>
+  </view>
+</view>

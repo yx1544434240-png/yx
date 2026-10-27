@@ -1,0 +1,46 @@
+services:
+  db:
+    image: mysql:8.4@sha256:6ea90827b1100f8f2ae306a539f86d2c264a26ed435a2a9f75551dd5c3aeb242
+    command: ["--default-time-zone=+08:00"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?configure MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: aged_care_db
+      MYSQL_USER: agedcare
+      MYSQL_PASSWORD: ${DB_PASSWORD:?configure DB_PASSWORD}
+    volumes:
+      - database:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:mysql://db:3306/aged_care_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      DB_USER: agedcare
+      DB_PASSWORD: ${DB_PASSWORD:?configure DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?configure JWT_SECRET}
+      BOOTSTRAP_ADMIN_USERNAME: ${BOOTSTRAP_ADMIN_USERNAME:-admin}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      WECHAT_APPID: ${WECHAT_APPID:-}
+      WECHAT_SECRET: ${WECHAT_SECRET:-}
+      APP_PUBLIC_BASE_URL: ${APP_PUBLIC_BASE_URL:-}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:3001}
+    ports: ["127.0.0.1:8081:8080"]
+    volumes: ["uploads:/app/uploads"]
+  admin:
+    build:
+      context: .
+      dockerfile: admin-web/Dockerfile
+    depends_on: [backend]
+    ports: ["127.0.0.1:3001:80"]
+volumes:
+  database:
+  uploads:

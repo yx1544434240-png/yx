@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "养老服务项目",
+  "usingComponents": {
+    "service-photo": "/components/service-photo/index",
+    "state-view": "/components/state-view/index"
+  }
+}

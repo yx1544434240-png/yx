@@ -1,0 +1,81 @@
+{
+  "pages": [
+    "pages/auth/login",
+    "pages/auth/demo",
+    "pages/user/welcome",
+    "pages/staff/apply",
+    "pages/index/index",
+    "pages/service/list",
+    "pages/service/detail",
+    "pages/order/create",
+    "pages/order/list",
+    "pages/order/detail",
+    "pages/order/confirm",
+    "pages/staff/workbench",
+    "pages/staff/credentials",
+    "pages/user/profile",
+    "pages/user/family",
+    "pages/user/elder-form",
+    "pages/user/elder-list",
+    "pages/user/feedback"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#F6F7F3",
+    "navigationBarTitleText": "颐邻 · 社区养老服务",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F6F7F3"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#64716A",
+    "selectedColor": "#176B5D",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home-muted.png",
+        "selectedIconPath": "assets/icons/home.png"
+      },
+      {
+        "pagePath": "pages/service/list",
+        "text": "服务",
+        "iconPath": "assets/icons/service-muted.png",
+        "selectedIconPath": "assets/icons/service.png"
+      },
+      {
+        "pagePath": "pages/order/list",
+        "text": "订单",
+        "iconPath": "assets/icons/order-muted.png",
+        "selectedIconPath": "assets/icons/order.png"
+      },
+      {
+        "pagePath": "pages/staff/workbench",
+        "text": "工作台",
+        "iconPath": "assets/icons/staff-muted.png",
+        "selectedIconPath": "assets/icons/staff.png"
+      },
+      {
+        "pagePath": "pages/user/profile",
+        "text": "我的",
+        "iconPath": "assets/icons/user-muted.png",
+        "selectedIconPath": "assets/icons/user.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "resizable": true,
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于服务地址精准定位与上门服务路线规划"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation",
+    "chooseLocation"
+  ],
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}
